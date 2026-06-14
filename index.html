@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VB 2026 ⚽ Tippelő Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06080f; --bg2:#0b0f1a; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+    --txt:#eef2fb; --mut:#9aa6c4; --mut2:#6b7799;
+    --a1:#34e3b0; --a2:#38bdf8; --a3:#a78bfa; --a4:#fb7185; --warn:#fbbf24;
+    --grad:linear-gradient(135deg,#34e3b0,#38bdf8);
+    --grad2:linear-gradient(135deg,#a78bfa,#fb7185);
+    --glow:0 0 0 1px rgba(255,255,255,.04),0 10px 40px -12px rgba(0,0,0,.6);
+    --rad:18px;
+    --disp:'Space Grotesk','Segoe UI',system-ui,sans-serif;
+    --ui:'Inter','Segoe UI',system-ui,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--ui);color:var(--txt);line-height:1.5;background:var(--bg);
+    -webkit-font-smoothing:antialiased;padding-bottom:70px;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;background:
+    radial-gradient(900px 500px at 82% -8%,rgba(56,189,248,.16),transparent 60%),
+    radial-gradient(800px 480px at 0% 8%,rgba(52,227,176,.13),transparent 55%),
+    radial-gradient(700px 700px at 60% 110%,rgba(167,139,250,.12),transparent 60%),var(--bg)}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.4;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:22px 22px}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 18px}
+  /* header */
+  header.top{padding:22px 0 12px;position:sticky;top:0;z-index:40;
+    background:linear-gradient(180deg,rgba(6,8,15,.92) 60%,rgba(6,8,15,0));backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line)}
+  .logo{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logo .ball{font-size:30px;filter:drop-shadow(0 0 14px rgba(52,227,176,.6));animation:float 4s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .logo h1{font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:-.5px;
+    background:linear-gradient(120deg,#fff,#bfe9ff 40%,#9ff0d3);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .badge{font-family:var(--disp);background:var(--grad);color:#04121a;font-weight:700;font-size:11px;
+    padding:5px 11px;border-radius:999px;letter-spacing:.4px}
+  .sub{color:var(--mut);font-size:13px;margin-top:8px}
+  nav.tabs{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
+  nav.tabs button{font-family:var(--ui);background:var(--panel);border:1px solid var(--line);color:var(--mut);
+    padding:9px 15px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;transition:.18s}
+  nav.tabs button:hover{color:var(--txt);border-color:var(--line2);background:var(--panel2);transform:translateY(-1px)}
+  nav.tabs button.active{background:var(--grad);color:#04121a;border-color:transparent;box-shadow:0 6px 22px -6px rgba(52,227,176,.6)}
+  /* layout */
+  section{display:none;animation:fade .35s ease}
+  section.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:920px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:18px;
+    backdrop-filter:blur(12px);box-shadow:var(--glow);transition:.2s}
+  .card:hover{border-color:var(--line2)}
+  .card h3{font-family:var(--disp);font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin-bottom:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .stat{position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:18px;backdrop-filter:blur(12px);box-shadow:var(--glow)}
+  .stat::before{content:"";position:absolute;top:-30px;right:-30px;width:110px;height:110px;border-radius:50%;background:var(--grad);opacity:.13;filter:blur(8px)}
+  .stat .v{font-family:var(--disp);font-size:30px;font-weight:700;letter-spacing:-.5px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{color:var(--mut);font-size:11px;margin-top:3px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+  .stat .x{font-size:13px;color:var(--txt);margin-top:7px;font-weight:500}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 9px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--mut2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  tbody tr{transition:.12s} tbody tr:hover td{background:rgba(255,255,255,.035)}
+  .team{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+  .fl{font-size:18px;line-height:1;display:inline-flex;align-items:center}
+  .flagimg{height:14px;width:21px;border-radius:3px;object-fit:cover;vertical-align:-2px;box-shadow:0 0 0 1px rgba(0,0,0,.3);background:rgba(255,255,255,.06)}
+  .femoji{font-size:17px;line-height:1}
+  .bteam .flagimg,.bm .flagimg{height:13px;width:19px}
+  .code{font-family:var(--disp);font-size:10px;color:var(--mut2);font-weight:600;background:rgba(255,255,255,.05);padding:1px 6px;border-radius:6px;letter-spacing:.5px}
+  .bar{height:8px;background:rgba(255,255,255,.06);border-radius:8px;overflow:hidden;min-width:50px}
+  .bar>i{display:block;height:100%;border-radius:8px;background:var(--grad);width:var(--w,0);animation:grow 1.1s cubic-bezier(.2,.85,.25,1)}
+  .bar.alt>i{background:var(--grad2)}
+  @keyframes grow{from{width:0}}
+  .barwrap{display:flex;align-items:center;gap:9px}
+  .pct{font-variant-numeric:tabular-nums;font-weight:700;min-width:44px;text-align:right;font-size:12px;font-family:var(--disp)}
+  .filterbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .filterbar button{background:var(--panel);border:1px solid var(--line);color:var(--mut);padding:7px 13px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;transition:.15s}
+  .filterbar button:hover{color:var(--txt);border-color:var(--line2)}
+  .filterbar button.active{background:var(--panel2);color:var(--a1);border-color:var(--a1)}
+  /* date header */
+  .dhead{display:flex;align-items:center;gap:11px;margin:20px 0 11px}
+  .dhead .dd{font-family:var(--disp);font-size:14px;font-weight:600;color:var(--txt)}
+  .dhead .dl{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .dchip{font-family:var(--disp);font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.3px}
+  .dchip.today{background:var(--grad);color:#04121a} .dchip.soon{background:rgba(167,139,250,.16);color:#c9b8ff;border:1px solid rgba(167,139,250,.3)}
+  .dchip.past{background:rgba(255,255,255,.06);color:var(--mut2)}
+  /* match */
+  details.match{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:11px;overflow:hidden;backdrop-filter:blur(10px);transition:.18s}
+  details.match:hover{border-color:var(--line2)} details.match[open]{border-color:rgba(56,189,248,.4)}
+  details.match summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+  details.match summary::-webkit-details-marker{display:none}
+  .mtime{font-family:var(--disp);font-size:11px;color:var(--mut2);font-weight:600;min-width:60px}
+  .mteams{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px;flex:1;min-width:230px}
+  .mteams .vs{color:var(--mut2);font-weight:600;font-size:11px}
+  .mscore{font-family:var(--disp);font-weight:700;font-size:17px;background:rgba(255,255,255,.06);padding:3px 12px;border-radius:9px}
+  .mtag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px}
+  .tag-done{background:rgba(255,255,255,.06);color:var(--mut)} .tag-next{background:rgba(52,227,176,.14);color:var(--a1);border:1px solid rgba(52,227,176,.3)}
+  .tag-live{background:rgba(251,113,133,.16);color:var(--a4);border:1px solid rgba(251,113,133,.35)}
+  .besttip{display:flex;align-items:center;gap:8px;font-size:12px;margin-left:auto;background:rgba(52,227,176,.08);border:1px solid rgba(52,227,176,.22);padding:6px 11px;border-radius:9px}
+  .besttip b{color:var(--a1)}
+  .mbody{padding:2px 16px 17px;border-top:1px solid var(--line)}
+  .mkts{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:13px;margin-top:15px}
+  .mkt{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+  .mkt h4{font-family:var(--disp);font-size:10px;text-transform:uppercase;color:var(--mut);letter-spacing:.6px;margin-bottom:10px;font-weight:600}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 0;font-size:13px}
+  .row .sel{color:var(--txt)} .row .od{font-family:var(--disp);font-weight:700;color:var(--a2);font-variant-numeric:tabular-nums}
+  .row .pp{color:var(--mut2);font-size:11px;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+  .mini{display:flex;height:10px;border-radius:7px;overflow:hidden;margin:10px 0 5px}
+  .mini i{display:block;height:100%}
+  .mini .h{background:var(--a2)} .mini .d{background:var(--mut2)} .mini .a{background:var(--a4)}
+  .legend{display:flex;gap:13px;font-size:10px;color:var(--mut);margin-top:3px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:4px}
+  .dot{width:8px;height:8px;border-radius:3px;display:inline-block}
+  .conf{font-family:var(--disp);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.3px}
+  .c-bb{background:linear-gradient(135deg,#34e3b0,#22c55e);color:#04121a} .c-vh{background:var(--a1);color:#04121a}
+  .c-h{background:var(--a2);color:#04121a} .c-m{background:var(--warn);color:#2a1c00} .c-l{background:rgba(255,255,255,.08);color:var(--mut)}
+  .val{font-family:var(--disp);font-size:9px;font-weight:700;color:#04121a;background:var(--a1);padding:2px 6px;border-radius:5px}
+  .noval{font-family:var(--disp);font-size:9px;font-weight:700;color:var(--mut2);background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px}
+  .oddedit{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2)}
+  .oddedit label{font-size:10px;color:var(--mut);font-family:var(--disp)}
+  .oddedit input{width:56px;padding:5px 7px;font-size:12px}
+  .realbadge{font-family:var(--disp);font-size:9px;font-weight:700;color:#04121a;background:var(--a2);padding:2px 7px;border-radius:5px;margin-left:6px}
+  .pill{display:inline-block;font-family:var(--disp);font-size:11px;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--mut);font-weight:600}
+  .pos{font-family:var(--disp);width:22px;height:22px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
+  .p1{background:var(--grad);color:#04121a} .p2{background:linear-gradient(135deg,#38bdf8,#818cf8);color:#04121a}
+  .p3{background:var(--warn);color:#2a1c00} .p4{background:rgba(255,255,255,.07);color:var(--mut)}
+  .note{font-size:12px;color:var(--mut);background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:15px;line-height:1.6}
+  .note b{color:var(--txt)}
+  .champrow{display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .champrow:last-child{border-bottom:none}
+  .champrow .rk{font-family:var(--disp);color:var(--mut2);font-weight:700;width:24px;font-size:13px}
+  .champrow .bw{flex:1}
+  .narr{font-size:14px;line-height:1.75} .narr p{margin-bottom:11px} .narr b{color:var(--a1)}
+  /* banker */
+  .bankrow{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid var(--line);margin-bottom:8px;flex-wrap:wrap;transition:.15s}
+  .bankrow:hover{border-color:var(--line2);background:rgba(255,255,255,.04)}
+  .bankrow .bm{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px;min-width:215px;flex:1}
+  .bankrow .bt{flex:1.3;min-width:200px;color:var(--txt);font-size:13px}
+  .bankrow .bt b{color:var(--a1)}
+  .bankrow .bp{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--a1);min-width:60px;text-align:right}
+  .bankrow .bo{font-family:var(--disp);font-weight:700;color:var(--a2);min-width:50px;text-align:right}
+  .slip{background:linear-gradient(160deg,rgba(52,227,176,.08),rgba(56,189,248,.05));border:1px solid rgba(52,227,176,.25);border-radius:var(--rad);padding:18px;backdrop-filter:blur(12px)}
+  .slip.alt{background:linear-gradient(160deg,rgba(167,139,250,.08),rgba(251,113,133,.05));border-color:rgba(167,139,250,.28)}
+  .slip h3{font-family:var(--disp);font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0}
+  .slip .si{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line2);font-size:13px}
+  .slip .si small{color:var(--mut)} .slip .si .od{font-family:var(--disp);font-weight:700;color:var(--a1)}
+  .slip.alt .si .od{color:var(--a3)}
+  .slip .tot{display:flex;justify-content:space-between;align-items:flex-end;padding-top:13px;font-weight:700}
+  .slip .tot .od{font-family:var(--disp);font-size:26px}
+  .slip .tot .big{color:var(--a1)} .slip.alt .tot .big{color:var(--a3)}
+  /* bracket */
+  .bracket{display:flex;gap:18px;overflow-x:auto;padding:8px 2px 18px}
+  .bcol{display:flex;flex-direction:column;gap:10px;min-width:190px;justify-content:space-around}
+  .bcol .ch{font-family:var(--disp);font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);font-weight:600;text-align:center;margin-bottom:2px}
+  .bmatch{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:11px;overflow:hidden;font-size:12px}
+  .bteam{display:flex;align-items:center;gap:7px;padding:7px 9px}
+  .bteam+.bteam{border-top:1px solid var(--line)}
+  .bteam.w{background:rgba(52,227,176,.1);font-weight:700}
+  .bteam.w .nm{color:var(--a1)} .bteam .fl{font-size:14px} .bteam .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bteam .sd{font-family:var(--disp);font-size:9px;color:var(--mut2);font-weight:600}
+  .bchamp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:linear-gradient(160deg,rgba(52,227,176,.12),rgba(56,189,248,.06));border:1px solid rgba(52,227,176,.3);border-radius:14px;padding:20px 15px;min-width:180px}
+  .bchamp .cup{font-size:36px;filter:drop-shadow(0 0 12px rgba(251,191,36,.5))} .bchamp .nm{font-family:var(--disp);font-weight:700;font-size:16px;color:var(--a1);text-align:center}
+  /* form */
+  .frm{display:flex;flex-wrap:wrap;gap:11px;align-items:flex-end}
+  .fg{display:flex;flex-direction:column;gap:5px}
+  .fg label{font-family:var(--disp);font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  select,input[type=number]{font-family:var(--ui);background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:9px 11px;font-size:13px}
+  select:focus,input:focus{outline:none;border-color:var(--a1)}
+  input[type=number]{width:66px}
+  .btn{font-family:var(--disp);background:var(--grad);color:#04121a;border:none;border-radius:10px;padding:10px 17px;font-weight:700;cursor:pointer;font-size:13px;transition:.15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px -8px rgba(52,227,176,.7)}
+  .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--mut)} .btn.ghost:hover{color:var(--txt);box-shadow:none}
+  .reslist{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+  .resitem{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px}
+  .resitem .x{margin-left:auto;cursor:pointer;color:var(--a4);font-weight:700;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);border-radius:7px;padding:3px 9px;font-size:11px}
+  .status{font-size:12px;color:var(--mut);margin-top:9px;min-height:16px}
+  .foot{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);color:var(--mut2);font-size:12px}
+  .disc{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);color:#e6c878;border-radius:12px;padding:12px 15px;font-size:12px;margin-top:14px;line-height:1.6}
+  ::-webkit-scrollbar{height:9px;width:9px} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:9px} ::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">
+      <span class="ball">⚽</span>
+      <h1>VB 2026 Tippelő Rendszer</h1>
+      <span class="badge">USA · KANADA · MEXIKÓ</span>
+    </div>
+    <div class="sub" id="subline">Adatok betöltése…</div>
+    <nav class="tabs" id="tabs">
+      <button data-t="ov" class="active">📊 Áttekintés</button>
+      <button data-t="bank">🎯 Biztos tippek</button>
+      <button data-t="road">💰 Road to 5M</button>
+      <button data-t="groups">🏆 Csoportok</button>
+      <button data-t="matches">⚽ Meccsek</button>
+      <button data-t="bracket">🗺️ Ágrajz</button>
+      <button data-t="winner">👑 VB-győztes</button>
+      <button data-t="stats">📈 Statisztikák</button>
+      <button data-t="update">🔄 Frissítés</button>
+    </nav>
+  </header>
+
+  <section id="ov" class="active"></section>
+  <section id="bank"></section>
+  <section id="road"></section>
+  <section id="groups"></section>
+  <section id="matches"></section>
+  <section id="bracket"></section>
+  <section id="winner"></section>
+  <section id="stats"></section>
+  <section id="update"></section>
+
+  <div class="foot">
+    <div class="disc">⚠️ <b>18+ · Felelős játék.</b> Ez statisztikai modell (Elo-rating + Poisson gólmodell + Monte Carlo a hivatalos kieséses ágrajzzal), nem garantált jóslat. Az oddsok <b>valós fogadóirodai szorzók</b> (margóval, a Tippmixhez közelítve) — az élő Tippmix-szorzó percenként változik, ezért a pontos értéket fogadás előtt mindig ellenőrizd, vagy írd be a meccsnél a „Valódi Tippmix odds" mezőbe. Csak annyit tegyél fel, amennyit elviselsz elveszíteni. Segélyvonal: 06-80-505-505.</div>
+    <p style="margin-top:14px">Állás: 2026.06.13. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CSAPATOK
+   ============================================================ */
+const TEAMS={
+  MEX:{n:'Mexikó',fl:'🇲🇽',elo:1840,cf:'CONCACAF',g:'A',st:'Santiago Giménez',host:1},
+  KOR:{n:'Dél-Korea',fl:'🇰🇷',elo:1790,cf:'AFC',g:'A',st:'Son Heung-min'},
+  CZE:{n:'Csehország',fl:'🇨🇿',elo:1780,cf:'UEFA',g:'A',st:'Patrik Schick'},
+  RSA:{n:'Dél-Afrika',fl:'🇿🇦',elo:1730,cf:'CAF',g:'A',st:'Lyle Foster'},
+  CAN:{n:'Kanada',fl:'🇨🇦',elo:1800,cf:'CONCACAF',g:'B',st:'Jonathan David',host:1},
+  BIH:{n:'Bosznia-H.',fl:'🇧🇦',elo:1765,cf:'UEFA',g:'B',st:'Edin Džeko'},
+  SUI:{n:'Svájc',fl:'🇨🇭',elo:1850,cf:'UEFA',g:'B',st:'Breel Embolo'},
+  QAT:{n:'Katar',fl:'🇶🇦',elo:1690,cf:'AFC',g:'B',st:'Akram Afif'},
+  BRA:{n:'Brazília',fl:'🇧🇷',elo:2030,cf:'CONMEBOL',g:'C',st:'Vinícius Jr.'},
+  MAR:{n:'Marokkó',fl:'🇲🇦',elo:1915,cf:'CAF',g:'C',st:'Youssef En-Nesyri'},
+  SCO:{n:'Skócia',fl:'🏴',elo:1780,cf:'UEFA',g:'C',st:'Scott McTominay'},
+  HAI:{n:'Haiti',fl:'🇭🇹',elo:1620,cf:'CONCACAF',g:'C',st:'Frantzdy Pierrot'},
+  USA:{n:'Egyesült Á.',fl:'🇺🇸',elo:1865,cf:'CONCACAF',g:'D',st:'Christian Pulisic',host:1},
+  AUS:{n:'Ausztrália',fl:'🇦🇺',elo:1755,cf:'AFC',g:'D',st:'Mitchell Duke'},
+  TUR:{n:'Törökország',fl:'🇹🇷',elo:1820,cf:'UEFA',g:'D',st:'Kenan Yıldız'},
+  PAR:{n:'Paraguay',fl:'🇵🇾',elo:1745,cf:'CONMEBOL',g:'D',st:'Miguel Almirón'},
+  GER:{n:'Németország',fl:'🇩🇪',elo:1975,cf:'UEFA',g:'E',st:'Kai Havertz'},
+  CIV:{n:'Elefántcsontp.',fl:'🇨🇮',elo:1805,cf:'CAF',g:'E',st:'Sébastien Haller'},
+  ECU:{n:'Ecuador',fl:'🇪🇨',elo:1845,cf:'CONMEBOL',g:'E',st:'Enner Valencia'},
+  CUW:{n:'Curaçao',fl:'🇨🇼',elo:1615,cf:'CONCACAF',g:'E',st:'Leandro Bacuna'},
+  NED:{n:'Hollandia',fl:'🇳🇱',elo:2000,cf:'UEFA',g:'F',st:'Cody Gakpo'},
+  JPN:{n:'Japán',fl:'🇯🇵',elo:1850,cf:'AFC',g:'F',st:'Kaoru Mitoma'},
+  SWE:{n:'Svédország',fl:'🇸🇪',elo:1810,cf:'UEFA',g:'F',st:'Viktor Gyökeres'},
+  TUN:{n:'Tunézia',fl:'🇹🇳',elo:1705,cf:'CAF',g:'F',st:'Youssef Msakni'},
+  BEL:{n:'Belgium',fl:'🇧🇪',elo:1900,cf:'UEFA',g:'G',st:'Romelu Lukaku'},
+  EGY:{n:'Egyiptom',fl:'🇪🇬',elo:1800,cf:'CAF',g:'G',st:'Mohamed Salah'},
+  IRN:{n:'Irán',fl:'🇮🇷',elo:1810,cf:'AFC',g:'G',st:'Mehdi Taremi'},
+  NZL:{n:'Új-Zéland',fl:'🇳🇿',elo:1655,cf:'OFC',g:'G',st:'Chris Wood'},
+  ESP:{n:'Spanyolország',fl:'🇪🇸',elo:2120,cf:'UEFA',g:'H',st:'Lamine Yamal'},
+  URU:{n:'Uruguay',fl:'🇺🇾',elo:1905,cf:'CONMEBOL',g:'H',st:'Darwin Núñez'},
+  KSA:{n:'Szaúd-Arábia',fl:'🇸🇦',elo:1700,cf:'AFC',g:'H',st:'Salem Al-Dawsari'},
+  CPV:{n:'Zöld-foki K.',fl:'🇨🇻',elo:1645,cf:'CAF',g:'H',st:'Ryan Mendes'},
+  FRA:{n:'Franciaország',fl:'🇫🇷',elo:2085,cf:'UEFA',g:'I',st:'Kylian Mbappé'},
+  SEN:{n:'Szenegál',fl:'🇸🇳',elo:1850,cf:'CAF',g:'I',st:'Nicolas Jackson'},
+  NOR:{n:'Norvégia',fl:'🇳🇴',elo:1850,cf:'UEFA',g:'I',st:'Erling Haaland'},
+  IRQ:{n:'Irak',fl:'🇮🇶',elo:1655,cf:'AFC',g:'I',st:'Aymen Hussein'},
+  ARG:{n:'Argentína',fl:'🇦🇷',elo:2095,cf:'CONMEBOL',g:'J',st:'Julián Álvarez'},
+  AUT:{n:'Ausztria',fl:'🇦🇹',elo:1820,cf:'UEFA',g:'J',st:'Marko Arnautović'},
+  ALG:{n:'Algéria',fl:'🇩🇿',elo:1800,cf:'CAF',g:'J',st:'Mohamed Amoura'},
+  JOR:{n:'Jordánia',fl:'🇯🇴',elo:1635,cf:'AFC',g:'J',st:'Mousa Al-Tamari'},
+  POR:{n:'Portugália',fl:'🇵🇹',elo:2010,cf:'UEFA',g:'K',st:'Bruno Fernandes'},
+  COL:{n:'Kolumbia',fl:'🇨🇴',elo:1895,cf:'CONMEBOL',g:'K',st:'Luis Díaz'},
+  UZB:{n:'Üzbegisztán',fl:'🇺🇿',elo:1685,cf:'AFC',g:'K',st:'Eldor Shomurodov'},
+  COD:{n:'Kongói DK',fl:'🇨🇩',elo:1745,cf:'CAF',g:'K',st:'Cédric Bakambu'},
+  ENG:{n:'Anglia',fl:'🏴',elo:2035,cf:'UEFA',g:'L',st:'Harry Kane'},
+  CRO:{n:'Horvátország',fl:'🇭🇷',elo:1895,cf:'UEFA',g:'L',st:'Andrej Kramarić'},
+  GHA:{n:'Ghána',fl:'🇬🇭',elo:1745,cf:'CAF',g:'L',st:'Mohammed Kudus'},
+  PAN:{n:'Panama',fl:'🇵🇦',elo:1700,cf:'CONCACAF',g:'L',st:'José Fajardo'},
+};
+const GROUPS={A:['MEX','KOR','CZE','RSA'],B:['CAN','BIH','SUI','QAT'],C:['BRA','MAR','SCO','HAI'],
+  D:['USA','AUS','TUR','PAR'],E:['GER','CIV','ECU','CUW'],F:['NED','JPN','SWE','TUN'],
+  G:['BEL','EGY','IRN','NZL'],H:['ESP','URU','KSA','CPV'],I:['FRA','SEN','NOR','IRQ'],
+  J:['ARG','AUT','ALG','JOR'],K:['POR','COL','UZB','COD'],L:['ENG','CRO','GHA','PAN']};
+
+/* ============================================================
+   ZÁSZLÓK – valódi képek (flagcdn), emoji fallback
+   ============================================================ */
+const ISO={MEX:'mx',KOR:'kr',CZE:'cz',RSA:'za',CAN:'ca',BIH:'ba',SUI:'ch',QAT:'qa',BRA:'br',MAR:'ma',SCO:'gb-sct',HAI:'ht',
+  USA:'us',AUS:'au',TUR:'tr',PAR:'py',GER:'de',CIV:'ci',ECU:'ec',CUW:'cw',NED:'nl',JPN:'jp',SWE:'se',TUN:'tn',
+  BEL:'be',EGY:'eg',IRN:'ir',NZL:'nz',ESP:'es',URU:'uy',KSA:'sa',CPV:'cv',FRA:'fr',SEN:'sn',NOR:'no',IRQ:'iq',
+  ARG:'ar',AUT:'at',ALG:'dz',JOR:'jo',POR:'pt',COL:'co',UZB:'uz',COD:'cd',ENG:'gb-eng',CRO:'hr',GHA:'gh',PAN:'pa'};
+function flagImg(code){const i=ISO[code];return `<img class="flagimg" src="https://flagcdn.com/w40/${i}.png" srcset="https://flagcdn.com/w80/${i}.png 2x" alt="${code}" loading="lazy" onerror="flagFallback(this,'${code}')">`;}
+function flagFallback(img,code){img.outerHTML='<span class="femoji">'+(TEAMS[code]&&TEAMS[code].em||'🏳️')+'</span>';}
+for(const c in TEAMS){TEAMS[c].em=TEAMS[c].fl;TEAMS[c].fl=flagImg(c);}
+
+/* ============================================================
+   TELJES MENETREND (időrendben, dátummal) – 72 csoportmeccs
+   ============================================================ */
+const TODAY='2026-06-13';
+const FIXTURES=[
+  {d:'2026-06-11',g:'A',h:'MEX',a:'RSA'},{d:'2026-06-11',g:'A',h:'KOR',a:'CZE'},
+  {d:'2026-06-12',g:'B',h:'CAN',a:'BIH'},{d:'2026-06-12',g:'D',h:'USA',a:'PAR'},
+  {d:'2026-06-13',g:'B',h:'QAT',a:'SUI'},{d:'2026-06-13',g:'C',h:'BRA',a:'MAR'},{d:'2026-06-13',g:'C',h:'HAI',a:'SCO'},{d:'2026-06-13',g:'D',h:'AUS',a:'TUR'},
+  {d:'2026-06-14',g:'E',h:'GER',a:'CUW'},{d:'2026-06-14',g:'F',h:'NED',a:'JPN'},{d:'2026-06-14',g:'E',h:'CIV',a:'ECU'},{d:'2026-06-14',g:'F',h:'SWE',a:'TUN'},
+  {d:'2026-06-15',g:'H',h:'ESP',a:'CPV'},{d:'2026-06-15',g:'G',h:'BEL',a:'EGY'},{d:'2026-06-15',g:'H',h:'KSA',a:'URU'},{d:'2026-06-15',g:'G',h:'IRN',a:'NZL'},
+  {d:'2026-06-16',g:'I',h:'FRA',a:'SEN'},{d:'2026-06-16',g:'I',h:'IRQ',a:'NOR'},{d:'2026-06-16',g:'J',h:'ARG',a:'ALG'},{d:'2026-06-16',g:'J',h:'AUT',a:'JOR'},
+  {d:'2026-06-17',g:'K',h:'POR',a:'COD'},{d:'2026-06-17',g:'L',h:'ENG',a:'CRO'},{d:'2026-06-17',g:'L',h:'GHA',a:'PAN'},{d:'2026-06-17',g:'K',h:'UZB',a:'COL'},
+  {d:'2026-06-18',g:'A',h:'CZE',a:'RSA'},{d:'2026-06-18',g:'B',h:'SUI',a:'BIH'},{d:'2026-06-18',g:'B',h:'CAN',a:'QAT'},{d:'2026-06-18',g:'A',h:'MEX',a:'KOR'},
+  {d:'2026-06-19',g:'C',h:'SCO',a:'MAR'},{d:'2026-06-19',g:'D',h:'USA',a:'AUS'},{d:'2026-06-19',g:'C',h:'BRA',a:'HAI'},{d:'2026-06-19',g:'D',h:'TUR',a:'PAR'},
+  {d:'2026-06-20',g:'F',h:'NED',a:'SWE'},{d:'2026-06-20',g:'E',h:'GER',a:'CIV'},{d:'2026-06-20',g:'E',h:'ECU',a:'CUW'},{d:'2026-06-20',g:'F',h:'TUN',a:'JPN'},
+  {d:'2026-06-21',g:'H',h:'ESP',a:'KSA'},{d:'2026-06-21',g:'G',h:'BEL',a:'IRN'},{d:'2026-06-21',g:'H',h:'URU',a:'CPV'},{d:'2026-06-21',g:'G',h:'NZL',a:'EGY'},
+  {d:'2026-06-22',g:'J',h:'ARG',a:'AUT'},{d:'2026-06-22',g:'I',h:'FRA',a:'IRQ'},{d:'2026-06-22',g:'I',h:'NOR',a:'SEN'},{d:'2026-06-22',g:'J',h:'JOR',a:'ALG'},
+  {d:'2026-06-23',g:'K',h:'POR',a:'UZB'},{d:'2026-06-23',g:'L',h:'ENG',a:'GHA'},{d:'2026-06-23',g:'L',h:'PAN',a:'CRO'},{d:'2026-06-23',g:'K',h:'COL',a:'COD'},
+  {d:'2026-06-24',g:'B',h:'SUI',a:'CAN'},{d:'2026-06-24',g:'B',h:'BIH',a:'QAT'},{d:'2026-06-24',g:'C',h:'SCO',a:'BRA'},{d:'2026-06-24',g:'C',h:'MAR',a:'HAI'},{d:'2026-06-24',g:'A',h:'CZE',a:'MEX'},{d:'2026-06-24',g:'A',h:'RSA',a:'KOR'},
+  {d:'2026-06-25',g:'E',h:'ECU',a:'GER'},{d:'2026-06-25',g:'E',h:'CUW',a:'CIV'},{d:'2026-06-25',g:'F',h:'JPN',a:'SWE'},{d:'2026-06-25',g:'F',h:'TUN',a:'NED'},{d:'2026-06-25',g:'D',h:'TUR',a:'USA'},{d:'2026-06-25',g:'D',h:'PAR',a:'AUS'},
+  {d:'2026-06-26',g:'I',h:'NOR',a:'FRA'},{d:'2026-06-26',g:'I',h:'SEN',a:'IRQ'},{d:'2026-06-26',g:'H',h:'CPV',a:'KSA'},{d:'2026-06-26',g:'H',h:'URU',a:'ESP'},{d:'2026-06-26',g:'G',h:'EGY',a:'IRN'},{d:'2026-06-26',g:'G',h:'NZL',a:'BEL'},
+  {d:'2026-06-27',g:'L',h:'PAN',a:'ENG'},{d:'2026-06-27',g:'L',h:'CRO',a:'GHA'},{d:'2026-06-27',g:'K',h:'COL',a:'POR'},{d:'2026-06-27',g:'K',h:'COD',a:'UZB'},{d:'2026-06-27',g:'J',h:'ALG',a:'AUT'},{d:'2026-06-27',g:'J',h:'JOR',a:'ARG'},
+];
+const SEED_RESULTS=[
+  {g:'A',h:'MEX',a:'RSA',hg:2,ag:0},{g:'A',h:'KOR',a:'CZE',hg:2,ag:1},
+  {g:'B',h:'CAN',a:'BIH',hg:1,ag:1},{g:'D',h:'USA',a:'PAR',hg:4,ag:1},
+  {g:'B',h:'QAT',a:'SUI',hg:1,ag:1},{g:'C',h:'BRA',a:'MAR',hg:1,ag:1},
+  {g:'C',h:'HAI',a:'SCO',hg:0,ag:1},{g:'D',h:'AUS',a:'TUR',hg:2,ag:0},
+];
+let RESULTS=loadResults();
+function loadResults(){try{const s=localStorage.getItem('vb26res');if(s)return JSON.parse(s);}catch(e){}return SEED_RESULTS.map(r=>({...r}));}
+function saveResults(){try{localStorage.setItem('vb26res',JSON.stringify(RESULTS));}catch(e){}}
+const resKey=(x,y)=>[x,y].sort().join('|');
+let RESMAP={};
+function buildResMap(){RESMAP={};RESULTS.forEach(r=>RESMAP[resKey(r.h,r.a)]=r);}
+
+/* dátum-segédek */
+const WD=['vas','hét','kedd','sze','csüt','pén','szo'],MON=['jan','feb','már','ápr','máj','jún','júl','aug','szep','okt','nov','dec'];
+function fmtDate(ds){const[y,m,d]=ds.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));return `${MON[m-1]}. ${d}., ${WD[dt.getUTCDay()]}`;}
+function relDay(ds){const a=Date.parse(TODAY),b=Date.parse(ds);const diff=Math.round((b-a)/864e5);
+  if(diff<0)return['Lejátszott','past'];if(diff===0)return['Ma','today'];if(diff===1)return['Holnap','today'];if(diff<=3)return[diff+' nap múlva','soon'];return null;}
+
+/* ============================================================
+   HIVATALOS KIESÉSES ÁGRAJZ
+   ============================================================ */
+const SLOT_ALLOW={M74:['A','B','C','D','F'],M77:['C','D','F','G','H'],M79:['C','E','F','H','I'],M80:['E','H','I','J','K'],M81:['B','E','F','I','J'],M82:['A','E','H','I','J'],M85:['E','F','G','I','J'],M87:['D','E','I','J','L']};
+const R32DEF=[['M73','R','A','R','B'],['M74','W','E','TH','M74'],['M75','W','F','R','C'],['M76','W','C','R','F'],['M77','W','I','TH','M77'],['M78','R','E','R','I'],['M79','W','A','TH','M79'],['M80','W','L','TH','M80'],['M81','W','D','TH','M81'],['M82','W','G','TH','M82'],['M83','R','K','R','L'],['M84','W','H','R','J'],['M85','W','B','TH','M85'],['M86','W','J','R','H'],['M87','W','K','TH','M87'],['M88','R','D','R','G']];
+const R16DEF=[['M89','M74','M77'],['M90','M73','M75'],['M91','M76','M78'],['M92','M79','M80'],['M93','M83','M84'],['M94','M81','M82'],['M95','M86','M88'],['M96','M85','M87']];
+const QFDEF=[['M97','M89','M90'],['M98','M93','M94'],['M99','M91','M92'],['M100','M95','M96']];
+const SFDEF=[['M101','M97','M98'],['M102','M99','M100']];const FINDEF=['M104','M101','M102'];
+const R32ORD=['M74','M77','M73','M75','M83','M84','M81','M82','M76','M78','M79','M80','M86','M88','M85','M87'];
+const R16ORD=['M89','M90','M93','M94','M91','M92','M95','M96'];const QFORD=['M97','M98','M99','M100'];const SFORD=['M101','M102'];
+function matchThirds(groupsArr){
+  const slots=Object.keys(SLOT_ALLOW);
+  const adj=slots.map(s=>{const a=[];groupsArr.forEach((g,i)=>{if(SLOT_ALLOW[s].includes(g))a.push(i);});return a;});
+  const mG=new Array(groupsArr.length).fill(-1);
+  function tryK(si,seen){for(const gi of adj[si]){if(seen[gi])continue;seen[gi]=1;if(mG[gi]<0||tryK(mG[gi],seen)){mG[gi]=si;return true;}}return false;}
+  for(let si=0;si<slots.length;si++)tryK(si,new Array(groupsArr.length).fill(0));
+  const res={},used={};for(let gi=0;gi<groupsArr.length;gi++){if(mG[gi]>=0){res[slots[mG[gi]]]=groupsArr[gi];used[slots[mG[gi]]]=1;}}
+  const remS=slots.filter(s=>!used[s]),remG=groupsArr.filter((g,i)=>mG[i]<0);remS.forEach((s,i)=>{if(remG[i])res[s]=remG[i];});
+  return res;
+}
+
+/* ============================================================
+   MATEMATIKA – Elo → Poisson
+   ============================================================ */
+const FACT=[1,1,2,6,24,120,720,5040,40320,362880,3628800];
+function pois(k,l){return Math.exp(-l)*Math.pow(l,k)/FACT[k];}
+const HA=55,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function lambdas(a,b){const A=TEAMS[a],B=TEAMS[b];let ha=0;if(A.host&&!B.host)ha=HA;else if(B.host&&!A.host)ha=-HA;
+  const dr=A.elo-B.elo+ha;let S=clamp(dr/170,-3,3);const T=2.5+0.30*Math.min(Math.abs(S),3);
+  return [Math.max(0.18,(T+S)/2),Math.max(0.18,(T-S)/2)];}
+function predict(a,b){
+  const[lA,lB]=lambdas(a,b);const N=9;const M=[];let pH=0,pD=0,pA=0,btts=0,csH=0,csA=0;
+  const ov={1.5:0,2.5:0,3.5:0,4.5:0};const cs=[];
+  for(let i=0;i<N;i++){M[i]=[];for(let j=0;j<N;j++){const p=pois(i,lA)*pois(j,lB);M[i][j]=p;
+    if(i>j)pH+=p;else if(i===j)pD+=p;else pA+=p;if(i>=1&&j>=1)btts+=p;if(j===0)csH+=p;if(i===0)csA+=p;
+    const tot=i+j;for(const ln in ov){if(tot>+ln)ov[ln]+=p;}cs.push({s:i+'-'+j,p});}}
+  cs.sort((x,y)=>y.p-x.p);
+  let hH1=0,hA1=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++){if(i-j>=2)hH1+=M[i][j];if(j-i>=2)hA1+=M[i][j];}
+  const lAh=lA*0.46,lBh=lB*0.46;let hH=0,hD=0,hA=0;
+  for(let i=0;i<6;i++)for(let j=0;j<6;j++){const p=pois(i,lAh)*pois(j,lBh);if(i>j)hH+=p;else if(i===j)hD+=p;else hA+=p;}
+  return {a,b,lA,lB,pH,pD,pA,btts,bttsN:1-btts,ov05:1-Math.exp(-lA-lB),
+    ov,un:{1.5:1-ov[1.5],2.5:1-ov[2.5],3.5:1-ov[3.5],4.5:1-ov[4.5]},
+    dc:{hd:pH+pD,ha:pH+pA,da:pD+pA},dnbH:pH/(pH+pA),dnbA:pA/(pH+pA),
+    csH,csA,cs:cs.slice(0,6),ml:cs[0].s,hcpH1:hH1,hcpA1:hA1,htH:hH,htD:hD,htA:hA,
+    scH:1-Math.exp(-lA),scA:1-Math.exp(-lB),gsA:1-Math.exp(-0.34*lA),gsB:1-Math.exp(-0.34*lB),exp:lA+lB};
+}
+const fair=p=>p>0?1/p:99,pc=p=>(p*100).toFixed(1)+'%';
+/* VALÓS fogadóirodai (Tippmix-szerű) odds = fair odds + reális margó, favorit-barát clamp */
+const MARGIN={cs:0.16,sc:0.10,dnb:0.05,dc:0.05,ou:0.06,btts:0.06,r:0.07};
+function bookO(p,t){const m=MARGIN[t]||MARGIN.r;return Math.max(1.01,(1/Math.min(p,0.999))*(1-m*(1-p)));}
+const od=(p,t)=>bookO(p,t).toFixed(2);
+/* valós piaci VB-győztes oddsok (2026.06., decimális) – a maradékot a modellből margózzuk */
+const WINODDS={ESP:5.5,FRA:7,ENG:7.5,ARG:8.5,BRA:9.5,POR:13,GER:15,NED:17,BEL:26,URU:29,CRO:41,COL:34,MAR:41,SEN:67,JPN:81,MEX:51,USA:51,NOR:67,SUI:101,ECU:126,EGY:151,CIV:151,AUT:151,KOR:201,SWE:151,IRN:251};
+/* a felhasználó által beírt VALÓDI Tippmix oddsok (1X2) */
+let USERODDS=(function(){try{return JSON.parse(localStorage.getItem('vb26odds')||'{}');}catch(e){return {};}})();
+function saveOdds(){try{localStorage.setItem('vb26odds',JSON.stringify(USERODDS));}catch(e){}}
+const okey=m=>m.g+m.a+m.b;
+
+/* legjobb (value) tipp */
+function bestTip(p){
+  const A=TEAMS[p.a].n,B=TEAMS[p.b].n;
+  const cand=[{k:'1',l:A+' győz',pr:p.pH},{k:'2',l:B+' győz',pr:p.pA},
+    {k:'1X',l:'Kétesély: '+A+' v. X',pr:p.dc.hd},{k:'X2',l:'Kétesély: '+B+' v. X',pr:p.dc.da},
+    {k:'12',l:'Nem lesz döntetlen',pr:p.dc.ha},{k:'O25',l:'Több mint 2,5 gól',pr:p.ov[2.5]},
+    {k:'U25',l:'Kevesebb mint 2,5 gól',pr:p.un[2.5]},{k:'O15',l:'Több mint 1,5 gól',pr:p.ov[1.5]},
+    {k:'BY',l:'Mindkét csapat gólt szerez',pr:p.btts},{k:'BN',l:'Nem szerez mindkét csapat gólt',pr:p.bttsN}];
+  let primary;const topRes=Math.max(p.pH,p.pA);
+  if(topRes>=0.58)primary=p.pH>p.pA?cand[0]:cand[1];
+  else primary=[cand[2],cand[3],cand[4],cand[5],cand[6],cand[8],cand[9]].sort((x,y)=>y.pr-x.pr)[0];
+  const conf=primary.pr>=0.72?['Nagyon erős','c-vh']:primary.pr>=0.6?['Erős','c-h']:primary.pr>=0.5?['Mérsékelt','c-m']:['Bizonytalan','c-l'];
+  primary.odds=od(primary.pr);primary.conf=conf;
+  const val=[cand[5],cand[7],cand[8],cand[9],{k:'CS',l:'Pontos: '+p.ml,pr:p.cs[0].p}].filter(x=>x.k!==primary.k).sort((x,y)=>y.pr-x.pr)[0];
+  val.odds=od(val.pr);return {primary,val};
+}
+/* BANKÓ: a legnagyobb eséllyel bejövő tipp (összes piacból) */
+function banker(p){
+  const A=TEAMS[p.a].n,B=TEAMS[p.b].n;
+  const cand=[
+    {l:A+' nem kap ki (1X)',pr:p.dc.hd},{l:B+' nem kap ki (X2)',pr:p.dc.da},{l:'Nem lesz döntetlen (12)',pr:p.dc.ha},
+    {l:A+' győzelem',pr:p.pH},{l:B+' győzelem',pr:p.pA},
+    {l:'Lesz gól a meccsen (Over 0,5)',pr:p.ov05},{l:'Több mint 1,5 gól',pr:p.ov[1.5]},
+    {l:'Kevesebb mint 3,5 gól',pr:p.un[3.5]},{l:'Kevesebb mint 4,5 gól',pr:p.un[4.5]},
+    {l:'Mindkét csapat gólt szerez',pr:p.btts},{l:'Nem szerez mindkét csapat gólt',pr:p.bttsN},
+    {l:A+' szerez gólt',pr:p.scH},{l:B+' szerez gólt',pr:p.scA},
+    {l:A+' (tét vissza döntetlennél)',pr:p.dnbH}];
+  const best=cand.sort((x,y)=>y.pr-x.pr)[0];
+  const c=best.pr>=0.9?['Bombabiztos','c-bb']:best.pr>=0.8?['Nagyon erős','c-vh']:best.pr>=0.7?['Erős','c-h']:['Jó','c-m'];
+  return {l:best.l,pr:best.pr,odds:od(best.pr),conf:c};
+}
+
+/* ============================================================
+   TÉT-AJÁNLÁS + ROAD TO 5M
+   ============================================================ */
+let BANKROLL=50000,TARGET=5000000;
+const ft=v=>Math.round(v).toLocaleString('hu-HU')+' Ft';
+function stakeFor(prob){let pct;if(prob>=.9)pct=.08;else if(prob>=.8)pct=.05;else if(prob>=.7)pct=.035;else if(prob>=.6)pct=.02;else pct=.012;
+  return {pct,amt:Math.round(BANKROLL*pct/100)*100};}
+function roadCombo(target){
+  const cands=ALLPAIRS.filter(m=>!m.res).map(m=>{const p=predFor(m);const uo=USERODDS[okey(m)];
+    return p.pH>=p.pA?{l:TEAMS[m.a].n+' győzelem',o:(uo&&uo.h)||bookO(p.pH,'r'),pr:p.pH,m}:{l:TEAMS[m.b].n+' győzelem',o:(uo&&uo.a)||bookO(p.pA,'r'),pr:p.pA,m};});
+  let pool=cands.filter(c=>c.pr>=0.5).sort((a,b)=>b.o-a.o); // favoritok, odds csökkenő
+  const pick=[];let prod=1;
+  // töltés: nagy oddsú lábak, amíg nem lépjük át a célt
+  pool.forEach(c=>{if(prod*c.o<=target){pick.push(c);prod*=c.o;c._u=1;}});
+  pool=pool.filter(c=>!c._u);
+  // záró láb: legkisebb odds, ami átviszi a célon (minimális túllövés)
+  if(prod<target&&pool.length){
+    const cross=pool.filter(c=>prod*c.o>=target).sort((a,b)=>a.o-b.o);
+    let closer=cross[0]||pool.sort((a,b)=>b.o-a.o)[0];
+    pick.push(closer);prod*=closer.o;closer._u=1;pool=pool.filter(c=>!c._u);
+    while(prod<target&&pool.length){const c=pool[0];pick.push(c);prod*=c.o;pool=pool.slice(1);}
+  }
+  pick.sort((a,b)=>a.m.d.localeCompare(b.m.d));
+  return {pick,odds:prod,prob:pick.reduce((a,c)=>a*c.pr,1)};
+}
+function renderRoad(){
+  const el=document.getElementById('road');const mult=TARGET/BANKROLL;
+  const rc=roadCombo(mult);const payout=BANKROLL*rc.odds;
+  const steps=7,perStep=Math.pow(mult,1/steps);let bal=BANKROLL,ladder='',cum=1;
+  for(let i=1;i<=steps;i++){const tgt=Math.round(BANKROLL*Math.pow(perStep,i)/100)*100;cum*=1/perStep;
+    ladder+=`<tr><td><span class="pos ${i===steps?'p1':'p3'}">${i}</span></td><td class="n">${ft(bal)}</td><td>2 db „bankó" tipp egy szelvényen</td><td class="n od">${perStep.toFixed(2)}</td><td class="n"><b style="color:var(--a1)">${ft(tgt)}</b></td><td class="n pct">${pc(cum)}</td></tr>`;bal=tgt;}
+  el.innerHTML=`
+   <div class="grid g4" style="margin-bottom:16px">
+     <div class="stat"><div class="v">${ft(BANKROLL)}</div><div class="l">Indulótőke</div></div>
+     <div class="stat"><div class="v">${ft(TARGET)}</div><div class="l">Cél a VB végére</div></div>
+     <div class="stat"><div class="v">${mult.toFixed(0)}×</div><div class="l">Szükséges szorzó</div></div>
+     <div class="stat"><div class="v">~${pc(1/mult)}</div><div class="l">Reális esély (fair odds)</div><div class="x">a buki margóval kevesebb</div></div>
+   </div>
+   <div class="card" style="margin-bottom:16px"><h3>⚙️ Terv beállítása</h3>
+     <div class="frm">
+       <div class="fg"><label>Indulótőke (Ft)</label><input type="number" id="rBank" value="${BANKROLL}" step="1000" style="width:120px"></div>
+       <div class="fg"><label>Cél (Ft)</label><input type="number" id="rTarget" value="${TARGET}" step="100000" style="width:140px"></div>
+       <button class="btn" id="rGo">Újraszámol</button>
+     </div></div>
+   <div class="grid g2">
+     <div class="slip"><h3>🏆 Ajánlott út: EGY kraftolt szelvény</h3>
+       <div style="font-size:13px;color:var(--mut);margin-bottom:11px;line-height:1.6">Matematikailag ez a legjobb választás: <b style="color:var(--txt)">egyetlen kombi (kraftolt szelvény) a teljes tőkével</b>. Kevesebb szelvény = kevesebb bukmécher-margó = nagyobb valódi esély, mint a sok kis lépcső. A szimpla (1 meccs) önmagában kevés a ${mult.toFixed(0)}×-hoz.</div>
+       ${rc.pick.map(l=>`<div class="si"><span>${TEAMS[l.m.a].fl} ${l.m.a}–${l.m.b} ${TEAMS[l.m.b].fl}<small style="display:block;color:var(--mut)">${fmtDate(l.m.d)} · ${l.l}</small></span><span class="od">@${l.o.toFixed(2)}</span></div>`).join('')}
+       <div class="tot"><span>Eredő odds (${rc.pick.length} meccs kombi)<br><small style="color:var(--mut)">mind bejön: ~${pc(rc.prob)}</small></span><span class="od big">${rc.odds.toFixed(1)}</span></div>
+       <div class="tot" style="border-top:1px solid var(--line2);margin-top:9px;padding-top:13px"><span>Tét → Nyeremény</span><span class="od big" style="font-size:19px">${ft(BANKROLL)} → ${ft(payout)}</span></div>
+     </div>
+     <div class="card"><h3>🪜 Alternatíva: lépcsős terv (7 lépés)</h3>
+       <table><thead><tr><th>#</th><th class="n">Tét (all-in)</th><th>Mire</th><th class="n">Odds</th><th class="n">Cél</th><th class="n">Kum.esély</th></tr></thead><tbody>${ladder}</tbody></table>
+       <div class="note" style="margin-top:12px">Minden lépésben a <b>teljes aktuális tőkédet</b> felteszed egy ~${perStep.toFixed(2)} eredő oddszal bíró kis kombira (kb. 2 „bankó" tipp). Ha egy lépés bukik, elölről kezdesz. A „Kum.esély" = mekkora eséllyel jutsz el odáig. <b>Ez nem jobb, mint az egy nagy kombi</b> — a buki margója lépésenként újra elveszi a részét.</div>
+     </div>
+   </div>
+   <div class="disc" style="margin-top:16px">🎯 <b>Őszintén, tisztán:</b> 50 000 Ft-ból 5 millió egy VB alatt = <b>${mult.toFixed(0)}×</b> szorzó, aminek a valódi esélye <b>~${pc(1/mult)}</b> (fair oddszal; a Tippmix margójával még kevesebb). Akárhogy is osztod fel (egy nagy kombi vagy lépcsők), a matek ugyanaz: a 100×-hoz ~1% az esély. Ez <b>nagy kockázatú szerencsejáték, nem befektetés</b>. Csak olyan pénzt tegyél fel, aminek a teljes elvesztését vállalod. Ez a terv az esélyt maximalizálja, de semmit sem garantál. Segélyvonal: 06-80-505-505.</div>`;
+  document.getElementById('rGo').onclick=()=>{const b=+document.getElementById('rBank').value,t=+document.getElementById('rTarget').value;
+    if(b>0&&t>b){BANKROLL=b;TARGET=t;renderAll();switchTab('road');}};
+}
+
+/* ============================================================
+   MONTE CARLO
+   ============================================================ */
+function rpois(l){if(l<=0)return 0;const L=Math.exp(-l);let k=0,p=1;do{k++;p*=Math.random();}while(p>L);return Math.min(k-1,8);}
+let _lc={},_ac={};
+function getL(a,b){const k=a+'|'+b;if(_lc[k])return _lc[k];const v=lambdas(a,b);_lc[k]=v;return v;}
+function adv(a,b){const k=a+'|'+b;if(_ac[k]!==undefined)return _ac[k];const p=predict(a,b);const v=p.pH+0.5*p.pD;_ac[k]=v;return v;}
+const PAIRS=g=>{const t=GROUPS[g];return[[t[0],t[1]],[t[0],t[2]],[t[0],t[3]],[t[1],t[2]],[t[1],t[3]],[t[2],t[3]]];};
+function simGroupOnce(g){
+  const tab={};GROUPS[g].forEach(t=>tab[t]={p:0,gd:0,gf:0,r:Math.random()});
+  for(const[x,y]of PAIRS(g)){let gx,gy;const r=RESMAP[resKey(x,y)];
+    if(r){if(r.h===x){gx=r.hg;gy=r.ag;}else{gx=r.ag;gy=r.hg;}}else{const[lx,ly]=getL(x,y);gx=rpois(lx);gy=rpois(ly);}
+    tab[x].gf+=gx;tab[x].gd+=gx-gy;tab[y].gf+=gy;tab[y].gd+=gy-gx;
+    if(gx>gy)tab[x].p+=3;else if(gx<gy)tab[y].p+=3;else{tab[x].p++;tab[y].p++;}}
+  const rank=GROUPS[g].slice().sort((a,b)=>tab[b].p-tab[a].p||tab[b].gd-tab[a].gd||tab[b].gf-tab[a].gf||tab[b].r-tab[a].r);
+  return {rank,tab};
+}
+function simulate(N){
+  const T=Object.keys(TEAMS);const C={};T.forEach(t=>C[t]={q:0,wg:0,sec:0,thq:0,r16:0,qf:0,sf:0,fin:0,ch:0});
+  for(let s=0;s<N;s++){
+    const W={},R={},thirds=[];
+    for(const g in GROUPS){const{rank,tab}=simGroupOnce(g);W[g]=rank[0];R[g]=rank[1];
+      C[rank[0]].wg++;C[rank[0]].q++;C[rank[1]].sec++;C[rank[1]].q++;
+      thirds.push({g,t:rank[2],p:tab[rank[2]].p,gd:tab[rank[2]].gd,gf:tab[rank[2]].gf,r:Math.random()});}
+    thirds.sort((a,b)=>b.p-a.p||b.gd-a.gd||b.gf-a.gf||b.r-a.r);
+    const best=thirds.slice(0,8);best.forEach(x=>{C[x.t].q++;C[x.t].thq++;});
+    const slotG=matchThirds(best.map(x=>x.g));const TH={};
+    for(const slot in slotG){const tt=best.find(x=>x.g===slotG[slot]);if(tt)TH[slot]=tt.t;}
+    const win={},resolve=(typ,key)=>typ==='W'?W[key]:typ==='R'?R[key]:TH[key];
+    for(const[id,t1,k1,t2,k2]of R32DEF){const A=resolve(t1,k1),B=resolve(t2,k2);win[id]=Math.random()<adv(A,B)?A:B;C[win[id]].r16++;}
+    const playR=(def,stage)=>{for(const[id,a,b]of def){const A=win[a],B=win[b];win[id]=Math.random()<adv(A,B)?A:B;C[win[id]][stage]++;}};
+    playR(R16DEF,'qf');playR(QFDEF,'sf');playR(SFDEF,'fin');
+    {const[id,a,b]=FINDEF;const A=win[a],B=win[b];win[id]=Math.random()<adv(A,B)?A:B;C[win[id]].ch++;}
+  }
+  const out={};T.forEach(t=>{const c=C[t];out[t]={};for(const k in c)out[t][k]=c[k]/N;});return out;
+}
+function predictedBracket(){
+  const W={},R={},tc=[];
+  for(const g in GROUPS){const ts=GROUPS[g];const win=ts.slice().sort((a,b)=>SIM[b].wg-SIM[a].wg)[0];
+    const run=ts.filter(t=>t!==win).sort((a,b)=>SIM[b].sec-SIM[a].sec)[0];
+    const thi=ts.filter(t=>t!==win&&t!==run).sort((a,b)=>SIM[b].q-SIM[a].q)[0];
+    W[g]=win;R[g]=run;tc.push({g,t:thi,s:SIM[thi].thq});}
+  tc.sort((a,b)=>b.s-a.s);const best=tc.slice(0,8);const slotG=matchThirds(best.map(x=>x.g));
+  const TH={};for(const slot in slotG){const tt=best.find(x=>x.g===slotG[slot]);if(tt)TH[slot]=tt.t;}
+  const resolve=(typ,key)=>typ==='W'?W[key]:typ==='R'?R[key]:TH[key];const win={},box={};
+  for(const[id,t1,k1,t2,k2]of R32DEF){const A=resolve(t1,k1),B=resolve(t2,k2);const w=adv(A,B)>=0.5?A:B;win[id]=w;box[id]={a:A,b:B,w};}
+  const playR=def=>{for(const[id,a,b]of def){const A=win[a],B=win[b];const w=adv(A,B)>=0.5?A:B;win[id]=w;box[id]={a:A,b:B,w};}};
+  playR(R16DEF);playR(QFDEF);playR(SFDEF);
+  {const[id,a,b]=FINDEF;const A=win[a],B=win[b];const w=adv(A,B)>=0.5?A:B;win[id]=w;box[id]={a:A,b:B,w};}
+  return {box,champ:win['M104']};
+}
+
+/* ============================================================
+   SEGÉD
+   ============================================================ */
+function curTable(g){const tab={};GROUPS[g].forEach(t=>tab[t]={mp:0,w:0,d:0,l:0,gf:0,ga:0,p:0});
+  RESULTS.filter(r=>r.g===g).forEach(r=>{const H=tab[r.h],A=tab[r.a];if(!H||!A)return;
+    H.mp++;A.mp++;H.gf+=r.hg;H.ga+=r.ag;A.gf+=r.ag;A.ga+=r.hg;
+    if(r.hg>r.ag){H.w++;A.l++;H.p+=3;}else if(r.hg<r.ag){A.w++;H.l++;A.p+=3;}else{H.d++;A.d++;H.p++;A.p++;}});return tab;}
+const TM=t=>`<span class="team"><span class="fl">${TEAMS[t].fl}</span>${TEAMS[t].n}<span class="code">${t}</span></span>`;
+const TMs=t=>`<span class="team"><span class="fl">${TEAMS[t].fl}</span><span class="code">${t}</span></span>`;
+
+/* ============================================================
+   ÁLLAPOT + RENDER
+   ============================================================ */
+let SIM,PB,PRED={},ALLPAIRS=[];
+function buildPairs(){ALLPAIRS=FIXTURES.map(fx=>{const r=RESMAP[resKey(fx.h,fx.a)];
+  let res=null;if(r)res=(r.h===fx.h)?{hg:r.hg,ag:r.ag}:{hg:r.ag,ag:r.hg};
+  return {g:fx.g,d:fx.d,a:fx.h,b:fx.a,res};});}
+function predFor(m){const k=m.d+m.g+m.a+m.b;if(!PRED[k])PRED[k]=predict(m.a,m.b);return PRED[k];}
+function recompute(cb){
+  _lc={};_ac={};PRED={};buildResMap();buildPairs();
+  document.getElementById('subline').innerHTML='Újraszámolás… 8000 szimuláció fut.';
+  setTimeout(()=>{
+    SIM=simulate(8000);PB=predictedBracket();ALLPAIRS.forEach(m=>predFor(m));
+    const played=RESULTS.length;
+    document.getElementById('subline').innerHTML=`48 csapat · 12 csoport · <b style="color:var(--a1)">${played}</b> lejátszott · <b style="color:var(--a1)">${72-played}</b> hátralévő csoportmeccs · hivatalos ágrajz · 8000 Monte Carlo szimuláció ✓`;
+    renderAll();if(cb)cb();
+  },40);
+}
+function renderAll(){renderOverview();renderBank();renderRoad();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
+
+/* dátum-fejléces lista építő */
+function withDateHeaders(list,rowFn){
+  let html='',cur='';
+  list.forEach(m=>{if(m.d!==cur){cur=m.d;const r=relDay(m.d);
+    html+=`<div class="dhead"><span class="dd">${fmtDate(m.d)}</span>${r?`<span class="dchip ${r[1]}">${r[0]}</span>`:''}<span class="dl"></span></div>`;}
+    html+=rowFn(m);});
+  return html;
+}
+
+/* ---- Áttekintés ---- */
+function renderOverview(){
+  const rank=Object.keys(TEAMS).sort((a,b)=>SIM[b].ch-SIM[a].ch);const top=rank.slice(0,8);
+  const fav=top[0],sec=top[1],thi=top[2];
+  const eloRank=Object.keys(TEAMS).sort((a,b)=>TEAMS[b].elo-TEAMS[a].elo);
+  const dark=rank.find(t=>eloRank.indexOf(t)>=8&&SIM[t].ch>0.012)||thi;
+  let gd='',gdv=-1;for(const g in GROUPS){const s=GROUPS[g].reduce((x,t)=>x+TEAMS[t].elo,0);if(s>gdv){gdv=s;gd=g;}}
+  const mx=SIM[fav].ch;
+  const bars=top.map((t,i)=>`<div class="champrow"><span class="rk">${i+1}</span>${TMs(t)}<div class="bw"><div class="bar"><i style="--w:${(SIM[t].ch/mx*100).toFixed(0)}%"></i></div></div><span class="pct">${pc(SIM[t].ch)}</span></div>`).join('');
+  const today=ALLPAIRS.filter(m=>m.d===TODAY);
+  const todayHtml=today.length?today.map(m=>{const p=predFor(m);const bk=banker(p);
+    return `<div class="bankrow"><div class="bm"><span class="fl">${TEAMS[m.a].fl}</span>${m.a} <span style="color:var(--mut2)">–</span> ${m.b} <span class="fl">${TEAMS[m.b].fl}</span></div><div class="bt">${m.res?`<b>Vége: ${m.res.hg}–${m.res.ag}</b>`:'Bankó: <b>'+bk.l+'</b>'}</div>${m.res?'':`<div class="bp">${pc(bk.pr)}</div><div class="bo">@${bk.odds}</div><div class="bo" style="color:var(--a3)">💰 ${ft(stakeFor(bk.pr).amt)}</div>`}</div>`;}).join(''):'<div style="color:var(--mut)">Ma nincs meccs.</div>';
+  document.getElementById('ov').innerHTML=`
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="stat"><div class="v">${pc(SIM[fav].ch)}</div><div class="l">Esélyes a címre</div><div class="x">${TEAMS[fav].fl} ${TEAMS[fav].n}</div></div>
+    <div class="stat"><div class="v">${TEAMS[PB.champ].fl} ${PB.champ}</div><div class="l">Modell-bajnok (ágrajz)</div><div class="x">${TEAMS[PB.champ].n}</div></div>
+    <div class="stat"><div class="v">48→32</div><div class="l">Kieséses körbe jut</div><div class="x">12 győztes + 12 második + 8 harmadik</div></div>
+    <div class="stat"><div class="v">${gd}</div><div class="l">„Halálcsoport"</div><div class="x">${GROUPS[gd].map(t=>TEAMS[t].fl).join(' ')}</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>📅 Mai meccsek (${fmtDate(TODAY)})</h3>${todayHtml}
+      <div class="note">A teljes, időrendi menetreted a <b>⚽ Meccsek</b> fülön, a kiemelt nagy eséllyel jövő tippek a <b>🎯 Biztos tippek</b> fülön.</div></div>
+    <div class="card"><h3>👑 Bajnoki esélyek (Top 8)</h3>${bars}</div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>📜 Így alakul a VB – a modell olvasata</h3>
+    <div class="narr">
+      <p>A fő favorit <b>${TEAMS[fav].n}</b> (${pc(SIM[fav].ch)} bajnoki esély), nyomában <b>${TEAMS[sec].n}</b> (${pc(SIM[sec].ch)}) és <b>${TEAMS[thi].n}</b> (${pc(SIM[thi].ch)}).</p>
+      <p>A determinisztikus ágrajz a <b>${TEAMS[PB.box['M104'].a].n} – ${TEAMS[PB.box['M104'].b].n}</b> döntőt vetíti előre, a kupát <b>${TEAMS[PB.champ].n}</b> emeli a magasba (teljes út: 🗺️ Ágrajz fül).</p>
+      <p>Sötét ló: <b>${TEAMS[dark].n}</b> — ${pc(SIM[dark].ch)} címeséllyel a papírformán felül teljesíthet. A legnehezebb csoport a <b>${gd}-csoport</b>.</p>
+      <p>Eddig: <b>USA 4–1 Paraguay</b>, Mexikó 2–0 Dél-Afrika, Dél-Korea 2–1 Csehország, Kanada 1–1 Bosznia.</p>
+    </div></div>`;
+}
+
+/* ---- Biztos tippek (Bankó) ---- */
+function renderBank(){
+  const items=ALLPAIRS.map(m=>({m,bk:banker(predFor(m))}));
+  const rem=items.filter(x=>!x.m.res);
+  const safe=rem.slice().sort((a,b)=>b.bk.pr-a.bk.pr);
+  // bombabiztos kombi: top 6 legbiztosabb
+  const combo=safe.slice(0,6);let cO=1,cP=1;combo.forEach(x=>{cO*=+x.bk.odds;cP*=x.bk.pr;});
+  // bátrabb: 5 legesélyesebb favorit-győzelem
+  const fav=rem.map(x=>{const p=predFor(x.m);const win=p.pH>=p.pA?{l:TEAMS[x.m.a].n+' győz',pr:p.pH}:{l:TEAMS[x.m.b].n+' győz',pr:p.pA};win.odds=od(win.pr);return{m:x.m,win};})
+    .sort((a,b)=>b.win.pr-a.win.pr).slice(0,5);
+  let fO=1,fP=1;fav.forEach(x=>{fO*=+x.win.odds;fP*=x.win.pr;});
+  const bankRow=m=>{const bk=banker(predFor(m));const r=relDay(m.d);
+    return `<div class="bankrow">
+      <div class="bm"><span class="fl">${TEAMS[m.a].fl}</span>${m.a}<span style="color:var(--mut2)">–</span>${m.b}<span class="fl">${TEAMS[m.b].fl}</span></div>
+      <div class="bt">${m.res?`<b style="color:var(--mut)">Lejátszott: ${m.res.hg}–${m.res.ag}</b>`:'<b>'+bk.l+'</b>'}</div>
+      ${m.res?'':`<span class="conf ${bk.conf[1]}">${bk.conf[0]}</span><div class="bp">${pc(bk.pr)}</div><div class="bo">@${bk.odds}</div><div class="bo" style="color:var(--a3);min-width:84px">💰 ${ft(stakeFor(bk.pr).amt)}</div>`}
+    </div>`;};
+  document.getElementById('bank').innerHTML=`
+   <div class="grid g2" style="margin-bottom:18px">
+     <div class="slip"><h3>🛡️ Bombabiztos kombi-szelvény (Top 6)</h3>
+       ${combo.map(x=>`<div class="si"><span>${TEAMS[x.m.a].fl} ${x.m.a}–${x.m.b} ${TEAMS[x.m.b].fl}<br><small>${x.bk.l}</small></span><span class="od">@${x.bk.odds}</span></div>`).join('')}
+       <div class="tot"><span>Eredő odds<br><small style="color:var(--mut)">mind bejön: ~${pc(cP)}</small></span><span class="od big">${cO.toFixed(2)}</span></div></div>
+     <div class="slip alt"><h3>⚡ Bátrabb favorit-szelvény (Top 5 győztes)</h3>
+       ${fav.map(x=>`<div class="si"><span>${TEAMS[x.m.a].fl} ${x.m.a}–${x.m.b} ${TEAMS[x.m.b].fl}<br><small>${x.win.l}</small></span><span class="od">@${x.win.odds}</span></div>`).join('')}
+       <div class="tot"><span>Eredő odds<br><small style="color:var(--mut)">mind bejön: ~${pc(fP)}</small></span><span class="od big">${fO.toFixed(2)}</span></div></div>
+   </div>
+   <div class="card"><h3>🎯 Minden meccs kiemelt bankó tippje – időrendben</h3>
+     <div class="note" style="margin-top:0;margin-bottom:6px">Meccsenként a <b>legnagyobb eséllyel bejövő</b> fogadás (az összes piacból kiválasztva). A „Bombabiztos" = 90%+ esély. A 💰 <b>javasolt tét</b> a tőkéd %-a (magabiztosság szerint), alapból ${ft(BANKROLL)} tőkével számolva — a tőke a <b>💰 Road to 5M</b> fülön állítható.</div>
+     ${withDateHeaders(ALLPAIRS,bankRow)}
+   </div>`;
+}
+
+/* ---- Csoportok ---- */
+function renderGroups(){
+  let html='<div class="grid g2">';
+  for(const g in GROUPS){const tab=curTable(g);const order=GROUPS[g].slice().sort((a,b)=>SIM[b].q-SIM[a].q);
+    html+=`<div class="card"><h3>🏆 Csoport ${g}</h3>
+      <table><thead><tr><th>#</th><th>Csapat</th><th class="n">M</th><th class="n">P</th><th class="n">GK</th><th class="n">Tovább%</th><th class="n">1.h%</th></tr></thead><tbody>
+      ${order.map((t,i)=>{const c=tab[t];return `<tr><td><span class="pos ${i<2?'p'+(i+1):i<3?'p3':'p4'}">${i+1}</span></td><td>${TM(t)}</td>
+        <td class="n">${c.mp}</td><td class="n"><b>${c.p}</b></td><td class="n">${c.gf}:${c.ga}</td>
+        <td class="n"><div class="barwrap" style="justify-content:flex-end"><div class="bar" style="width:50px"><i style="--w:${(SIM[t].q*100).toFixed(0)}%"></i></div><span class="pct">${(SIM[t].q*100).toFixed(0)}%</span></div></td>
+        <td class="n pct">${(SIM[t].wg*100).toFixed(0)}%</td></tr>`;}).join('')}
+      </tbody></table>
+      <div style="font-size:11px;color:var(--mut2);margin-top:9px">Modell-tipp továbbjutók: <b style="color:var(--a1)">${order[0]} & ${order[1]}</b></div></div>`;}
+  document.getElementById('groups').innerHTML=html+'</div>';
+}
+
+/* ---- Meccsek (időrendben) ---- */
+let matchFilter='all';
+function renderMatches(){
+  const el=document.getElementById('matches');
+  let fb='<div class="filterbar"><button data-f="all" class="'+(matchFilter==='all'?'active':'')+'">Összes</button><button data-f="rem" class="'+(matchFilter==='rem'?'active':'')+'">Csak hátralévő</button>';
+  for(const g in GROUPS)fb+=`<button data-f="${g}" class="${matchFilter===g?'active':''}">Cs. ${g}</button>`;
+  fb+='</div>';
+  const info='<div class="note" style="margin-top:0;margin-bottom:14px">💡 Az oddsok <b>valós fogadóirodai szorzók</b> (margóval, nem „fair" odds). A pontos élő Tippmix-szorzót nyisd meg a meccsnél, és írd be a <b>„Valódi Tippmix odds"</b> mezőbe (1 / X / 2) — a dashboard kiszámolja, hogy <b>VALUE</b>-e (megéri-e), és azzal számol a szelvényeknél is.</div>';
+  let list=ALLPAIRS;
+  if(matchFilter==='rem')list=ALLPAIRS.filter(m=>!m.res);else if(matchFilter!=='all')list=ALLPAIRS.filter(m=>m.g===matchFilter);
+  el.innerHTML=fb+info+withDateHeaders(list,matchCard);
+  el.querySelectorAll('.filterbar button').forEach(b=>b.onclick=()=>{matchFilter=b.dataset.f;renderMatches();});
+}
+function mrow(sel,p,t){return `<div class="row"><span class="sel">${sel}</span><span style="display:flex;gap:8px"><span class="pp">${pc(p)}</span><span class="od">${od(p,t)}</span></span></div>`;}
+/* 1X2 sor: ha van beírt VALÓDI odds, azt mutatja + value-jelző, különben margós piaci odds */
+function oRow(sel,p,uo){const o=uo||bookO(p,'r');let b='';
+  if(uo){const e=p*uo-1;b=e>=0.03?`<span class="val">VALUE +${(e*100).toFixed(0)}%</span>`:`<span class="noval">${(e*100).toFixed(0)}%</span>`;}
+  return `<div class="row"><span class="sel">${sel}</span><span style="display:flex;gap:7px;align-items:center">${b}<span class="pp">${pc(p)}</span><span class="od">${o.toFixed(2)}${uo?'<span class="realbadge">valódi</span>':''}</span></span></div>`;}
+function setRealOdd(key,w,v){USERODDS[key]=USERODDS[key]||{};const n=parseFloat(v);if(n>1)USERODDS[key][w]=n;else delete USERODDS[key][w];if(USERODDS[key]&&Object.keys(USERODDS[key]).length===0)delete USERODDS[key];saveOdds();}
+function applyOdds(){renderMatches();renderBank();renderRoad();}
+function matchCard(m){
+  const p=predFor(m);const A=TEAMS[m.a],B=TEAMS[m.b];const bt=bestTip(p);const bk=banker(p);const done=!!m.res;
+  const key=okey(m),uo=USERODDS[key];
+  const tag=done?'<span class="mtag tag-done">Vége</span>':(m.d===TODAY?'<span class="mtag tag-live">Ma</span>':'<span class="mtag tag-next">Hátralévő</span>');
+  const score=done?`<span class="mscore">${m.res.hg} – ${m.res.ag}</span>`:'';
+  const hp=p.pH*100,dp=p.pD*100,ap=p.pA*100;
+  return `<details class="match"><summary><span class="pill">${m.g}</span>
+    <span class="mteams"><span class="fl">${A.fl}</span>${A.n}<span class="vs">vs</span><span class="fl">${B.fl}</span>${B.n}</span>
+    ${score}${tag}${done?'':`<span class="besttip">Bankó: <b>${bk.l}</b> · @${bk.odds}</span>`}
+  </summary><div class="mbody">
+    <div class="mini"><i class="h" style="width:${hp}%"></i><i class="d" style="width:${dp}%"></i><i class="a" style="width:${ap}%"></i></div>
+    <div class="legend"><span><i class="dot" style="background:var(--a2)"></i>${A.n} ${hp.toFixed(0)}%</span><span><i class="dot" style="background:var(--mut2)"></i>Döntetlen ${dp.toFixed(0)}%</span><span><i class="dot" style="background:var(--a4)"></i>${B.n} ${ap.toFixed(0)}%</span></div>
+    <div class="mkts">
+      <div class="mkt"><h4>Végeredmény (1X2)${uo?' <span class="realbadge">valódi Tippmix</span>':''}</h4>${oRow('1 · '+A.n,p.pH,uo&&uo.h)}${oRow('X · Döntetlen',p.pD,uo&&uo.x)}${oRow('2 · '+B.n,p.pA,uo&&uo.a)}
+        <div class="oddedit"><label>Valódi Tippmix odds:</label>
+          <input type="number" step="0.01" placeholder="1" value="${uo&&uo.h||''}" oninput="setRealOdd('${key}','h',this.value)">
+          <input type="number" step="0.01" placeholder="X" value="${uo&&uo.x||''}" oninput="setRealOdd('${key}','x',this.value)">
+          <input type="number" step="0.01" placeholder="2" value="${uo&&uo.a||''}" oninput="setRealOdd('${key}','a',this.value)">
+          <button class="btn" style="padding:5px 12px" onclick="applyOdds()">Frissít</button></div></div>
+      <div class="mkt"><h4>Kétesély</h4>${mrow('1X · '+A.n+' v. X',p.dc.hd)}${mrow('12 · nincs döntetlen',p.dc.ha)}${mrow('X2 · '+B.n+' v. X',p.dc.da)}</div>
+      <div class="mkt"><h4>Gólszám (Over/Under)</h4>${mrow('Több mint 0,5',p.ov05)}${mrow('Több mint 1,5',p.ov[1.5])}${mrow('Több mint 2,5',p.ov[2.5])}${mrow('Kevesebb mint 2,5',p.un[2.5])}</div>
+      <div class="mkt"><h4>Mindkét csapat gólt szerez</h4>${mrow('Igen',p.btts,'btts')}${mrow('Nem',p.bttsN,'btts')}<h4 style="margin-top:11px">Tét visszajár döntetlennél</h4>${mrow(A.n,p.dnbH,'dnb')}${mrow(B.n,p.dnbA,'dnb')}</div>
+      <div class="mkt"><h4>Pontos végeredmény (Top 6)</h4>${p.cs.map(c=>mrow(c.s,c.p,'cs')).join('')}</div>
+      <div class="mkt"><h4>Hendikep & Félidő</h4>${mrow(A.n+' -1,5',p.hcpH1)}${mrow(B.n+' -1,5',p.hcpA1)}<h4 style="margin-top:11px">Félidei állás</h4>${mrow('1 · '+A.n,p.htH)}${mrow('X · Döntetlen',p.htD)}${mrow('2 · '+B.n,p.htA)}</div>
+      <div class="mkt"><h4>Gólszerző (bármikor)</h4>${mrow(A.st,p.gsA)}${mrow(B.st,p.gsB)}<h4 style="margin-top:11px">Kapott gól nélkül</h4>${mrow(A.n+' nem kap gólt',p.csH)}${mrow(B.n+' nem kap gólt',p.csA)}</div>
+      <div class="mkt" style="background:rgba(52,227,176,.06);border-color:rgba(52,227,176,.25)"><h4 style="color:var(--a1)">⭐ Modell ajánlások</h4>
+        <div class="row"><span class="sel">🛡️ Bankó: ${bk.l}</span><span class="od">@${bk.odds}</span></div>
+        <div style="margin:5px 0"><span class="conf ${bk.conf[1]}">${bk.conf[0]} (${pc(bk.pr)})</span></div>
+        <div class="row"><span class="sel">💰 Javasolt tét (${(stakeFor(bk.pr).pct*100).toFixed(0)}% tőke)</span><span class="od" style="color:var(--a3)">${ft(stakeFor(bk.pr).amt)}</span></div>
+        <div class="row"><span class="sel">🎯 Fő tipp: ${bt.primary.l}</span><span class="od">@${bt.primary.odds}</span></div>
+        <div class="row"><span class="sel">⚡ Value: ${bt.val.l}</span><span class="od">@${bt.val.odds}</span></div>
+        <div style="font-size:11px;color:var(--mut);margin-top:5px">Várható összgól: <b style="color:var(--txt)">${p.exp.toFixed(2)}</b> · legvalószínűbb: <b style="color:var(--txt)">${p.ml}</b></div></div>
+    </div></div></details>`;
+}
+
+/* ---- Ágrajz ---- */
+function bteam(c,w){return `<div class="bteam ${w?'w':''}"><span class="fl">${TEAMS[c].fl}</span><span class="nm">${TEAMS[c].n}</span><span class="sd">${c}</span></div>`;}
+function bbox(id){const b=PB.box[id];if(!b)return '';return `<div class="bmatch">${bteam(b.a,b.w===b.a)}${bteam(b.b,b.w===b.b)}</div>`;}
+function renderBracket(){
+  const col=(t,ids)=>`<div class="bcol"><div class="ch">${t}</div>${ids.map(bbox).join('')}</div>`;
+  document.getElementById('bracket').innerHTML=`
+   <div class="card"><h3>🗺️ A modell szerinti kieséses ág (Round of 32 → döntő)</h3>
+    <div class="bracket">
+      ${col('Nyolcaddöntő (32)',R32ORD)}${col('Tizenhatoddöntő',R16ORD)}${col('Negyeddöntő',QFORD)}${col('Elődöntő',SFORD)}
+      <div class="bcol"><div class="ch">Döntő</div>${bbox('M104')}</div>
+      <div class="bcol"><div class="ch">Bajnok</div><div class="bchamp"><div class="cup">🏆</div><div class="nm">${TEAMS[PB.champ].fl} ${TEAMS[PB.champ].n}</div><div style="font-size:11px;color:var(--mut)">${pc(SIM[PB.champ].ch)} szim. esély</div></div></div>
+    </div>
+    <div class="note">A <b>legvalószínűbb forgatókönyv</b>: minden csoportból a modell 1./2. helyezettje (+ 8 legjobb harmadik), minden párharcot a nagyobb eséllyel bíró csapat nyer. A párosítások a <b>hivatalos FIFA ágrajzot</b> követik (M73–M104); a % a 8000 szimuláció átlaga.</div>
+   </div>`;
+}
+
+/* ---- VB-győztes ---- */
+function renderWinner(){
+  const rank=Object.keys(TEAMS).sort((a,b)=>SIM[b].ch-SIM[a].ch);const mx=SIM[rank[0]].ch;
+  document.getElementById('winner').innerHTML=`<div class="grid g2">
+    <div class="card"><h3>👑 Bajnoki esélyek & valódi Tippmix odds</h3>
+      <table><thead><tr><th>#</th><th>Csapat</th><th class="n">Modell%</th><th class="n">Tippmix odds</th><th class="n">Value</th><th class="n">Döntő%</th></tr></thead><tbody>
+      ${rank.slice(0,20).map((t,i)=>{const mo=WINODDS[t]||bookO(SIM[t].ch);const edge=SIM[t].ch*mo-1;
+        const vc=WINODDS[t]?(edge>=0.05?`<span class="val">+${(edge*100).toFixed(0)}%</span>`:`<span class="noval">${(edge*100).toFixed(0)}%</span>`):'<span style="color:var(--mut2)">~</span>';
+        return `<tr><td class="rk" style="color:var(--mut2);font-weight:700">${i+1}</td><td>${TM(t)}</td>
+        <td class="n"><b style="color:var(--a1)">${pc(SIM[t].ch)}</b></td><td class="n od">${mo.toFixed(2)}${WINODDS[t]?'<span class="realbadge">valódi</span>':''}</td>
+        <td class="n">${vc}</td><td class="n pct">${pc(SIM[t].fin)}</td></tr>`;}).join('')}</tbody></table>
+      <div class="note" style="margin-top:12px"><b>Tippmix odds</b> = a valós piaci győztes-szorzók (2026. jún.). <b>Value</b> = ahol a modell esélye nagyobb, mint amit a szorzó beáraz → elméletileg megéri. A „~" jelű csapatoknál a szorzó modellből becsült.</div></div>
+    <div class="card"><h3>📊 Címesély-grafikon (Top 16)</h3>
+      ${rank.slice(0,16).map(t=>`<div class="champrow">${TMs(t)}<div class="bw"><div class="bar"><i style="--w:${(SIM[t].ch/mx*100).toFixed(0)}%"></i></div></div><span class="pct">${pc(SIM[t].ch)}</span></div>`).join('')}
+      <div class="note">A teljes torna 8000-szeres szimulációja a hivatalos kieséses ágrajzon végigjátszva.</div></div></div>`;
+}
+
+/* ---- Statisztikák ---- */
+function renderStats(){
+  const T=Object.keys(TEAMS);const elo=T.slice().sort((a,b)=>TEAMS[b].elo-TEAMS[a].elo);
+  const atk={},def={};T.forEach(t=>{let sf=0,sa=0,n=0;T.forEach(o=>{if(o!==t){const[la,lb]=lambdas(t,o);sf+=la;sa+=lb;n++;}});atk[t]=sf/n;def[t]=sa/n;});
+  const bestAtk=T.slice().sort((a,b)=>atk[b]-atk[a]).slice(0,10),bestDef=T.slice().sort((a,b)=>def[a]-def[b]).slice(0,10);
+  const mxA=atk[bestAtk[0]],mnD=def[bestDef[0]],mxD=Math.max(...T.map(t=>def[t]));
+  const conf={};T.forEach(t=>{conf[TEAMS[t].cf]=(conf[TEAMS[t].cf]||0)+SIM[t].ch;});
+  const confArr=Object.entries(conf).sort((a,b)=>b[1]-a[1]);
+  const played=RESULTS.length,goals=RESULTS.reduce((s,r)=>s+r.hg+r.ag,0);
+  document.getElementById('stats').innerHTML=`
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="stat"><div class="v">${played}/72</div><div class="l">Lejátszott csoportmeccs</div></div>
+    <div class="stat"><div class="v">${goals}</div><div class="l">Eddigi gól</div><div class="x">${played?(goals/played).toFixed(1):0} gól/meccs</div></div>
+    <div class="stat"><div class="v">${TEAMS[elo[0]].elo}</div><div class="l">Legmagasabb Elo</div><div class="x">${TEAMS[elo[0]].fl} ${TEAMS[elo[0]].n}</div></div>
+    <div class="stat"><div class="v">${confArr[0][0]}</div><div class="l">Legesélyesebb konf.</div><div class="x">${pc(confArr[0][1])} össz. címesély</div></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h3>💪 Erősségi rangsor (Elo)</h3>${elo.slice(0,12).map((t,i)=>`<div class="champrow"><span class="rk">${i+1}</span>${TMs(t)}<div class="bw"><div class="bar"><i style="--w:${((TEAMS[t].elo-1600)/520*100).toFixed(0)}%"></i></div></div><span class="pct">${TEAMS[t].elo}</span></div>`).join('')}</div>
+    <div class="card"><h3>⚔️ Legjobb támadás</h3>${bestAtk.map((t,i)=>`<div class="champrow"><span class="rk">${i+1}</span>${TMs(t)}<div class="bw"><div class="bar alt"><i style="--w:${(atk[t]/mxA*100).toFixed(0)}%"></i></div></div><span class="pct">${atk[t].toFixed(2)}</span></div>`).join('')}<div style="font-size:11px;color:var(--mut2);margin-top:7px">Várható lőtt gól/meccs</div></div>
+    <div class="card"><h3>🛡️ Legjobb védelem</h3>${bestDef.map((t,i)=>`<div class="champrow"><span class="rk">${i+1}</span>${TMs(t)}<div class="bw"><div class="bar"><i style="--w:${((mxD-def[t])/(mxD-mnD)*100).toFixed(0)}%"></i></div></div><span class="pct">${def[t].toFixed(2)}</span></div>`).join('')}<div style="font-size:11px;color:var(--mut2);margin-top:7px">Várható kapott gól/meccs</div></div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>🌍 Konföderációk összesített címesélye</h3>
+    ${confArr.map(([c,v])=>`<div class="champrow" style="border:none"><span style="width:120px;font-weight:600;font-family:var(--disp)">${c}</span><div class="bw"><div class="bar"><i style="--w:${(v/confArr[0][1]*100).toFixed(0)}%"></i></div></div><span class="pct">${pc(v)}</span></div>`).join('')}</div>`;
+}
+
+/* ---- Frissítés ---- */
+const NAMEMAP={'mexico':'MEX','south korea':'KOR','korea republic':'KOR','czechia':'CZE','czech republic':'CZE','south africa':'RSA','canada':'CAN','bosnia and herzegovina':'BIH','switzerland':'SUI','qatar':'QAT','brazil':'BRA','morocco':'MAR','scotland':'SCO','haiti':'HAI','united states':'USA','usa':'USA','australia':'AUS','turkey':'TUR','turkiye':'TUR','türkiye':'TUR','paraguay':'PAR','germany':'GER','ivory coast':'CIV',"cote d'ivoire":'CIV',"côte d'ivoire":'CIV','ecuador':'ECU','curacao':'CUW','curaçao':'CUW','netherlands':'NED','japan':'JPN','sweden':'SWE','tunisia':'TUN','belgium':'BEL','egypt':'EGY','iran':'IRN','ir iran':'IRN','new zealand':'NZL','spain':'ESP','uruguay':'URU','saudi arabia':'KSA','cape verde':'CPV','cabo verde':'CPV','france':'FRA','senegal':'SEN','norway':'NOR','iraq':'IRQ','argentina':'ARG','austria':'AUT','algeria':'ALG','jordan':'JOR','portugal':'POR','colombia':'COL','uzbekistan':'UZB','dr congo':'COD','congo dr':'COD','democratic republic of congo':'COD','england':'ENG','croatia':'CRO','ghana':'GHA','panama':'PAN'};
+function renderUpdate(){
+  const opts=Object.keys(GROUPS).map(g=>`<option value="${g}">Csoport ${g}</option>`).join('');
+  document.getElementById('update').innerHTML=`<div class="grid g2">
+    <div class="card"><h3>➕ Eredmény hozzáadása / módosítása</h3>
+      <div class="frm">
+        <div class="fg"><label>Csoport</label><select id="uG">${opts}</select></div>
+        <div class="fg"><label>Hazai</label><select id="uH"></select></div>
+        <div class="fg"><label>Gól</label><input type="number" id="uHG" min="0" value="0"></div>
+        <div class="fg"><label>Vendég</label><select id="uA"></select></div>
+        <div class="fg"><label>Gól</label><input type="number" id="uAG" min="0" value="0"></div>
+        <button class="btn" id="uAdd">Mentés</button>
+      </div><div class="status" id="uStatus"></div>
+      <div class="note">A mentett eredmény azonnal újraszámolja az összes tippet, állást, ágrajzot és bajnoki esélyt. Az adatok a böngésződben maradnak.</div></div>
+    <div class="card"><h3>🌐 Élő lekérés & visszaállítás</h3>
+      <div style="display:flex;gap:9px;flex-wrap:wrap"><button class="btn" id="uFetch">Élő eredmények lekérése</button><button class="btn ghost" id="uReset">Visszaállítás (alap)</button></div>
+      <div class="status" id="uFetchStatus"></div>
+      <div class="note">A „Élő lekérés" a nyílt <b>TheSportsDB</b> API-ból próbálja behúzni a befejezett VB-meccsek eredményét. Ha nem ad adatot, a kézi bevitel mindig működik.</div></div></div>
+   <div class="card" style="margin-top:16px"><h3>📋 Rögzített eredmények (${RESULTS.length})</h3>
+     <div class="reslist" id="uList">${RESULTS.map((r,i)=>`<div class="resitem"><span class="pill">${r.g}</span>${TEAMS[r.h].fl} ${TEAMS[r.h].n} <b>${r.hg} – ${r.ag}</b> ${TEAMS[r.a].n} ${TEAMS[r.a].fl}<span class="x" data-i="${i}">✕ törlés</span></div>`).join('')||'<div style="color:var(--mut)">Nincs rögzített eredmény.</div>'}</div></div>`;
+  const gSel=document.getElementById('uG'),hSel=document.getElementById('uH'),aSel=document.getElementById('uA');
+  const fill=()=>{const ts=GROUPS[gSel.value];const o=ts.map(t=>`<option value="${t}">${TEAMS[t].n}</option>`).join('');hSel.innerHTML=o;aSel.innerHTML=o;aSel.selectedIndex=1;};
+  fill();gSel.onchange=fill;
+  document.getElementById('uAdd').onclick=()=>{const h=hSel.value,a=aSel.value,st=document.getElementById('uStatus');
+    if(h===a){st.textContent='⚠️ A két csapat nem lehet ugyanaz.';return;}
+    RESULTS=RESULTS.filter(r=>resKey(r.h,r.a)!==resKey(h,a));
+    RESULTS.push({g:gSel.value,h,a,hg:+document.getElementById('uHG').value,ag:+document.getElementById('uAG').value});saveResults();
+    st.textContent='✓ Mentve, újraszámolás…';recompute(()=>{switchTab('update');document.getElementById('uStatus').textContent='✓ Kész!';});};
+  document.getElementById('uReset').onclick=()=>{RESULTS=SEED_RESULTS.map(r=>({...r}));saveResults();recompute(()=>switchTab('update'));};
+  document.querySelectorAll('#uList .x').forEach(x=>x.onclick=()=>{RESULTS.splice(+x.dataset.i,1);saveResults();recompute(()=>switchTab('update'));});
+  document.getElementById('uFetch').onclick=fetchLive;
+}
+async function fetchLive(){
+  const st=document.getElementById('uFetchStatus');st.textContent='⏳ Lekérés a TheSportsDB-ből…';
+  try{const r=await fetch('https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026');
+    const j=await r.json();const ev=j&&j.events?j.events:[];
+    if(!ev.length){st.textContent='ℹ️ Az API jelenleg nem adott meccsadatot. Használd a kézi bevitelt.';return;}
+    let added=0,skip=0;
+    ev.forEach(e=>{const hs=e.intHomeScore,as=e.intAwayScore;if(hs==null||as==null||hs===''||as==='')return;
+      const hc=NAMEMAP[(e.strHomeTeam||'').toLowerCase().trim()],ac=NAMEMAP[(e.strAwayTeam||'').toLowerCase().trim()];
+      if(!hc||!ac||!TEAMS[hc]||!TEAMS[ac]){skip++;return;}if(TEAMS[hc].g!==TEAMS[ac].g)return;
+      RESULTS=RESULTS.filter(x=>resKey(x.h,x.a)!==resKey(hc,ac));RESULTS.push({g:TEAMS[hc].g,h:hc,a:ac,hg:+hs,ag:+as});added++;});
+    if(added){saveResults();st.textContent=`✓ ${added} eredmény behúzva${skip?' ('+skip+' nem azonosítható)':''}. Újraszámolás…`;recompute(()=>{switchTab('update');document.getElementById('uFetchStatus').textContent=`✓ Kész — ${added} meccs frissítve.`;});}
+    else st.textContent='ℹ️ Nincs új befejezett csoportmeccs az API-ban.';
+  }catch(e){st.textContent='⚠️ A lekérés nem sikerült (hálózat/CORS). Használd a kézi bevitelt.';}
+}
+
+/* ---- Tabok ---- */
+function switchTab(t){document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x.dataset.t===t));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===t));window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.t));
+recompute();
+</script>
+</body>
+</html>
