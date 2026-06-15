@@ -9,14 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#06080f; --bg2:#0b0f1a; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
-    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
-    --txt:#eef2fb; --mut:#9aa6c4; --mut2:#6b7799;
-    --a1:#34e3b0; --a2:#38bdf8; --a3:#a78bfa; --a4:#fb7185; --warn:#fbbf24;
-    --grad:linear-gradient(135deg,#34e3b0,#38bdf8);
-    --grad2:linear-gradient(135deg,#a78bfa,#fb7185);
-    --glow:0 0 0 1px rgba(255,255,255,.04),0 10px 40px -12px rgba(0,0,0,.6);
-    --rad:18px;
+    --bg:#070d0a; --bg2:#0c1410; --panel:rgba(255,255,255,.04); --panel2:rgba(255,255,255,.07);
+    --line:rgba(255,255,255,.08); --line2:rgba(45,222,110,.28);
+    --txt:#eefaf2; --mut:#93ab9e; --mut2:#5f786c;
+    --a1:#20df6a; --a2:#0fb851; --a3:#d4ff3f; --a4:#ff5470; --warn:#ffc23d;
+    --grad:linear-gradient(135deg,#2dde6e,#0fb851);
+    --grad2:linear-gradient(135deg,#d4ff3f,#20df6a);
+    --glow:0 0 0 1px rgba(45,222,110,.07),0 12px 40px -12px rgba(0,0,0,.7);
+    --rad:16px;
     --disp:'Space Grotesk','Segoe UI',system-ui,sans-serif;
     --ui:'Inter','Segoe UI',system-ui,Arial,sans-serif;
   }
@@ -25,21 +25,21 @@
   body{font-family:var(--ui);color:var(--txt);line-height:1.5;background:var(--bg);
     -webkit-font-smoothing:antialiased;padding-bottom:70px;overflow-x:hidden}
   body::before{content:"";position:fixed;inset:0;z-index:-2;background:
-    radial-gradient(900px 500px at 82% -8%,rgba(56,189,248,.16),transparent 60%),
-    radial-gradient(800px 480px at 0% 8%,rgba(52,227,176,.13),transparent 55%),
-    radial-gradient(700px 700px at 60% 110%,rgba(167,139,250,.12),transparent 60%),var(--bg)}
+    radial-gradient(900px 520px at 85% -10%,rgba(32,223,106,.20),transparent 60%),
+    radial-gradient(800px 480px at -5% 6%,rgba(15,184,81,.16),transparent 55%),
+    radial-gradient(700px 700px at 55% 115%,rgba(212,255,63,.09),transparent 60%),var(--bg)}
   body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.4;pointer-events:none;
     background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:22px 22px}
   .wrap{max-width:1280px;margin:0 auto;padding:0 18px}
   /* header */
   header.top{padding:22px 0 12px;position:sticky;top:0;z-index:40;
-    background:linear-gradient(180deg,rgba(6,8,15,.92) 60%,rgba(6,8,15,0));backdrop-filter:blur(14px);
-    border-bottom:1px solid var(--line)}
+    background:linear-gradient(180deg,rgba(7,13,10,.94) 60%,rgba(7,13,10,0));backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(45,222,110,.18);box-shadow:0 10px 36px -24px rgba(45,222,110,.7)}
   .logo{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .logo .ball{font-size:30px;filter:drop-shadow(0 0 14px rgba(52,227,176,.6));animation:float 4s ease-in-out infinite}
+  .logo .ball{font-size:30px;filter:drop-shadow(0 0 14px rgba(45,222,110,.6));animation:float 4s ease-in-out infinite}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   .logo h1{font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:-.5px;
-    background:linear-gradient(120deg,#fff,#bfe9ff 40%,#9ff0d3);-webkit-background-clip:text;background-clip:text;color:transparent}
+    background:linear-gradient(120deg,#fff,#bff5d2 45%,#2dde6e);-webkit-background-clip:text;background-clip:text;color:transparent}
   .badge{font-family:var(--disp);background:var(--grad);color:#04121a;font-weight:700;font-size:11px;
     padding:5px 11px;border-radius:999px;letter-spacing:.4px}
   .sub{color:var(--mut);font-size:13px;margin-top:8px}
@@ -47,7 +47,7 @@
   nav.tabs button{font-family:var(--ui);background:var(--panel);border:1px solid var(--line);color:var(--mut);
     padding:9px 15px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;transition:.18s}
   nav.tabs button:hover{color:var(--txt);border-color:var(--line2);background:var(--panel2);transform:translateY(-1px)}
-  nav.tabs button.active{background:var(--grad);color:#04121a;border-color:transparent;box-shadow:0 6px 22px -6px rgba(52,227,176,.6)}
+  nav.tabs button.active{background:var(--grad);color:#04121a;border-color:transparent;box-shadow:0 6px 22px -6px rgba(45,222,110,.6)}
   /* layout */
   section{display:none;animation:fade .35s ease}
   section.active{display:block}
@@ -91,11 +91,11 @@
   .dhead .dd{font-family:var(--disp);font-size:14px;font-weight:600;color:var(--txt)}
   .dhead .dl{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
   .dchip{font-family:var(--disp);font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.3px}
-  .dchip.today{background:var(--grad);color:#04121a} .dchip.soon{background:rgba(167,139,250,.16);color:#c9b8ff;border:1px solid rgba(167,139,250,.3)}
+  .dchip.today{background:var(--grad);color:#04121a} .dchip.soon{background:rgba(212,255,63,.16);color:#e6ffa8;border:1px solid rgba(212,255,63,.32)}
   .dchip.past{background:rgba(255,255,255,.06);color:var(--mut2)}
   /* match */
   details.match{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:11px;overflow:hidden;backdrop-filter:blur(10px);transition:.18s}
-  details.match:hover{border-color:var(--line2)} details.match[open]{border-color:rgba(56,189,248,.4)}
+  details.match:hover{border-color:var(--line2)} details.match[open]{border-color:rgba(45,222,110,.45)}
   details.match summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
   details.match summary::-webkit-details-marker{display:none}
   .mtime{font-family:var(--disp);font-size:11px;color:var(--mut2);font-weight:600;min-width:60px}
@@ -103,9 +103,9 @@
   .mteams .vs{color:var(--mut2);font-weight:600;font-size:11px}
   .mscore{font-family:var(--disp);font-weight:700;font-size:17px;background:rgba(255,255,255,.06);padding:3px 12px;border-radius:9px}
   .mtag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px}
-  .tag-done{background:rgba(255,255,255,.06);color:var(--mut)} .tag-next{background:rgba(52,227,176,.14);color:var(--a1);border:1px solid rgba(52,227,176,.3)}
+  .tag-done{background:rgba(255,255,255,.06);color:var(--mut)} .tag-next{background:rgba(45,222,110,.14);color:var(--a1);border:1px solid rgba(45,222,110,.3)}
   .tag-live{background:rgba(251,113,133,.16);color:var(--a4);border:1px solid rgba(251,113,133,.35)}
-  .besttip{display:flex;align-items:center;gap:8px;font-size:12px;margin-left:auto;background:rgba(52,227,176,.08);border:1px solid rgba(52,227,176,.22);padding:6px 11px;border-radius:9px}
+  .besttip{display:flex;align-items:center;gap:8px;font-size:12px;margin-left:auto;background:linear-gradient(135deg,rgba(45,222,110,.18),rgba(15,184,81,.08));border:1px solid var(--a1);padding:6px 13px;border-radius:999px;font-weight:600;box-shadow:0 4px 16px -6px rgba(45,222,110,.5)}
   .besttip b{color:var(--a1)}
   .mbody{padding:2px 16px 17px;border-top:1px solid var(--line)}
   .mkts{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:13px;margin-top:15px}
@@ -114,9 +114,18 @@
   .row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 0;font-size:13px}
   .row .sel{color:var(--txt)} .row .od{font-family:var(--disp);font-weight:700;color:var(--a2);font-variant-numeric:tabular-nums}
   .row .pp{color:var(--mut2);font-size:11px;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+  /* fogadógombok (sportfogadás-app stílus) */
+  .betrow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px}
+  .betbtn{display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:11px;padding:11px 6px;transition:.18s}
+  .betbtn:hover{border-color:var(--line2);transform:translateY(-1px)}
+  .betbtn .bl{font-size:10px;color:var(--mut);font-weight:600;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .betbtn .bv{font-family:var(--disp);font-size:19px;font-weight:700;color:var(--txt)}
+  .betbtn.top{background:linear-gradient(160deg,rgba(45,222,110,.2),rgba(45,222,110,.05));border-color:var(--a1);box-shadow:0 6px 20px -8px rgba(45,222,110,.6)}
+  .betbtn.top .bv{color:var(--a1)} .betbtn.top .bl{color:#bff5d2}
+  .pickchip{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(45,222,110,.16),rgba(15,184,81,.07));border:1px solid var(--a1);color:var(--a1);font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;font-family:var(--disp)}
   .mini{display:flex;height:10px;border-radius:7px;overflow:hidden;margin:10px 0 5px}
   .mini i{display:block;height:100%}
-  .mini .h{background:var(--a2)} .mini .d{background:var(--mut2)} .mini .a{background:var(--a4)}
+  .mini .h{background:var(--a1)} .mini .d{background:var(--mut2)} .mini .a{background:var(--a4)}
   .legend{display:flex;gap:13px;font-size:10px;color:var(--mut);margin-top:3px;flex-wrap:wrap}
   .legend span{display:inline-flex;align-items:center;gap:4px}
   .dot{width:8px;height:8px;border-radius:3px;display:inline-block}
@@ -131,7 +140,7 @@
   .realbadge{font-family:var(--disp);font-size:9px;font-weight:700;color:#04121a;background:var(--a2);padding:2px 7px;border-radius:5px;margin-left:6px}
   .pill{display:inline-block;font-family:var(--disp);font-size:11px;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--mut);font-weight:600}
   .pos{font-family:var(--disp);width:22px;height:22px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
-  .p1{background:var(--grad);color:#04121a} .p2{background:linear-gradient(135deg,#38bdf8,#818cf8);color:#04121a}
+  .p1{background:var(--grad);color:#04121a} .p2{background:linear-gradient(135deg,#9ae65c,#0fb851);color:#04121a}
   .p3{background:var(--warn);color:#2a1c00} .p4{background:rgba(255,255,255,.07);color:var(--mut)}
   .note{font-size:12px;color:var(--mut);background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:15px;line-height:1.6}
   .note b{color:var(--txt)}
@@ -148,8 +157,8 @@
   .bankrow .bt b{color:var(--a1)}
   .bankrow .bp{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--a1);min-width:60px;text-align:right}
   .bankrow .bo{font-family:var(--disp);font-weight:700;color:var(--a2);min-width:50px;text-align:right}
-  .slip{background:linear-gradient(160deg,rgba(52,227,176,.08),rgba(56,189,248,.05));border:1px solid rgba(52,227,176,.25);border-radius:var(--rad);padding:18px;backdrop-filter:blur(12px)}
-  .slip.alt{background:linear-gradient(160deg,rgba(167,139,250,.08),rgba(251,113,133,.05));border-color:rgba(167,139,250,.28)}
+  .slip{background:linear-gradient(160deg,rgba(45,222,110,.1),rgba(15,184,81,.04));border:1px solid rgba(45,222,110,.28);border-radius:var(--rad);padding:18px;backdrop-filter:blur(12px)}
+  .slip.alt{background:linear-gradient(160deg,rgba(212,255,63,.09),rgba(15,184,81,.04));border-color:rgba(212,255,63,.3)}
   .slip h3{font-family:var(--disp);font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0}
   .slip .si{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line2);font-size:13px}
   .slip .si small{color:var(--mut)} .slip .si .od{font-family:var(--disp);font-weight:700;color:var(--a1)}
@@ -164,10 +173,10 @@
   .bmatch{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:11px;overflow:hidden;font-size:12px}
   .bteam{display:flex;align-items:center;gap:7px;padding:7px 9px}
   .bteam+.bteam{border-top:1px solid var(--line)}
-  .bteam.w{background:rgba(52,227,176,.1);font-weight:700}
+  .bteam.w{background:rgba(45,222,110,.1);font-weight:700}
   .bteam.w .nm{color:var(--a1)} .bteam .fl{font-size:14px} .bteam .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .bteam .sd{font-family:var(--disp);font-size:9px;color:var(--mut2);font-weight:600}
-  .bchamp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:linear-gradient(160deg,rgba(52,227,176,.12),rgba(56,189,248,.06));border:1px solid rgba(52,227,176,.3);border-radius:14px;padding:20px 15px;min-width:180px}
+  .bchamp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:linear-gradient(160deg,rgba(45,222,110,.16),rgba(15,184,81,.06));border:1px solid rgba(45,222,110,.35);border-radius:14px;padding:20px 15px;min-width:180px}
   .bchamp .cup{font-size:36px;filter:drop-shadow(0 0 12px rgba(251,191,36,.5))} .bchamp .nm{font-family:var(--disp);font-weight:700;font-size:16px;color:var(--a1);text-align:center}
   /* form */
   .frm{display:flex;flex-wrap:wrap;gap:11px;align-items:flex-end}
@@ -177,7 +186,7 @@
   select:focus,input:focus{outline:none;border-color:var(--a1)}
   input[type=number]{width:66px}
   .btn{font-family:var(--disp);background:var(--grad);color:#04121a;border:none;border-radius:10px;padding:10px 17px;font-weight:700;cursor:pointer;font-size:13px;transition:.15s}
-  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px -8px rgba(52,227,176,.7)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px -8px rgba(45,222,110,.7)}
   .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--mut)} .btn.ghost:hover{color:var(--txt);box-shadow:none}
   .reslist{display:flex;flex-direction:column;gap:7px;margin-top:8px}
   .resitem{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px}
@@ -200,6 +209,9 @@
     <nav class="tabs" id="tabs">
       <button data-t="ov" class="active">📊 Áttekintés</button>
       <button data-t="bank">🎯 Biztos tippek</button>
+      <button data-t="daily">📅 Napi tipp</button>
+      <button data-t="upset">🎲 Meglepetés</button>
+      <button data-t="scorer">🥅 Gólkirály</button>
       <button data-t="groups">🏆 Csoportok</button>
       <button data-t="matches">⚽ Meccsek</button>
       <button data-t="bracket">🗺️ Ágrajz</button>
@@ -211,6 +223,9 @@
 
   <section id="ov" class="active"></section>
   <section id="bank"></section>
+  <section id="daily"></section>
+  <section id="upset"></section>
+  <section id="scorer"></section>
   <section id="groups"></section>
   <section id="matches"></section>
   <section id="bracket"></section>
@@ -323,6 +338,8 @@ const SEED_RESULTS=[
   {g:'B',h:'QAT',a:'SUI',hg:1,ag:1},{g:'C',h:'BRA',a:'MAR',hg:1,ag:1},
   {g:'C',h:'HAI',a:'SCO',hg:0,ag:1},{g:'D',h:'AUS',a:'TUR',hg:2,ag:0},
   {g:'E',h:'GER',a:'CUW',hg:7,ag:1},
+  {g:'F',h:'NED',a:'JPN',hg:2,ag:2},{g:'E',h:'CIV',a:'ECU',hg:1,ag:0},
+  {g:'F',h:'SWE',a:'TUN',hg:5,ag:1},
 ];
 let RESULTS=loadResults();
 function loadResults(){try{const s=localStorage.getItem('vb26res');if(s)return JSON.parse(s);}catch(e){}return SEED_RESULTS.map(r=>({...r}));}
@@ -568,7 +585,7 @@ function recompute(cb){
     renderAll();if(cb)cb();
   },40);
 }
-function renderAll(){renderOverview();renderBank();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
+function renderAll(){renderOverview();renderBank();renderDaily();renderUpset();renderScorer();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
 
 /* dátum-fejléces lista építő */
 function withDateHeaders(list,rowFn){
@@ -613,6 +630,85 @@ function renderOverview(){
 }
 
 /* ---- Biztos tippek (Bankó) ---- */
+/* ---- Napi tipp (~1,7–2,0 odds, naponta egy) ---- */
+function dailyCands(m){
+  const p=predFor(m);const A=TEAMS[m.a].n,B=TEAMS[m.b].n;
+  return [
+    {k:'1',l:A+' győzelem',pr:p.pH},{k:'2',l:B+' győzelem',pr:p.pA},
+    {k:'1X',l:A+' kikaphatatlan (1X)',pr:p.dc.hd},{k:'X2',l:B+' kikaphatatlan (X2)',pr:p.dc.da},
+    {k:'12',l:'Nem lesz döntetlen (12)',pr:p.dc.ha},
+    {k:'O15',l:'Több mint 1,5 gól',pr:p.ov[1.5]},{k:'O25',l:'Több mint 2,5 gól',pr:p.ov[2.5]},
+    {k:'U25',l:'Kevesebb mint 2,5 gól',pr:p.un[2.5]},{k:'U35',l:'Kevesebb mint 3,5 gól',pr:p.un[3.5]},
+    {k:'BY',l:'Mindkét csapat gólt szerez',pr:p.btts},{k:'BN',l:'Nem szerez mindkét csapat gólt',pr:p.bttsN}
+  ].map(c=>({...c,m,odds:1/c.pr}));
+}
+function evalKey(k,hg,ag){const t=hg+ag;switch(k){
+  case'1':return hg>ag;case'2':return ag>hg;case'1X':return hg>=ag;case'X2':return ag>=hg;
+  case'12':return hg!==ag;case'O15':return t>1.5;case'O25':return t>2.5;case'U25':return t<2.5;
+  case'U35':return t<3.5;case'BY':return hg>=1&&ag>=1;case'BN':return!(hg>=1&&ag>=1);}return null;}
+function renderDaily(){
+  const days=[...new Set(FIXTURES.map(f=>f.d))].sort();let hit=0,tot=0;
+  const rows=days.map(d=>{
+    const ms=ALLPAIRS.filter(m=>m.d===d);if(!ms.length)return '';
+    let cands=[];ms.forEach(m=>{cands=cands.concat(dailyCands(m));});
+    const band=cands.filter(c=>c.odds>=1.65&&c.odds<=2.05);
+    const pick=band.length?band.sort((a,b)=>b.pr-a.pr)[0]:cands.filter(c=>c.odds>=1.45).sort((a,b)=>Math.abs(a.odds-1.8)-Math.abs(b.odds-1.8))[0];
+    if(!pick)return '';
+    const m=pick.m,done=!!m.res,rel=relDay(d);
+    let badge;
+    if(done){const w=evalKey(pick.k,m.res.hg,m.res.ag);tot++;if(w)hit++;
+      badge=w?'<span class="conf c-bb">✓ BEJÖTT</span>':'<span class="conf" style="background:var(--a4);color:#fff">✗ nem jött be</span>';}
+    else badge='<span class="pickchip">AJÁNLOTT</span>';
+    return `<div class="bankrow">
+      <div style="min-width:128px;font-family:var(--disp);font-weight:600;font-size:13px">${fmtDate(d)}${rel?` <span class="dchip ${rel[1]}">${rel[0]}</span>`:''}</div>
+      <div style="flex:1;min-width:175px;font-weight:700">${TEAMS[m.a].fl} ${m.a} <span style="color:var(--mut2)">–</span> ${m.b} ${TEAMS[m.b].fl}${done?` <span style="color:var(--mut)">(${m.res.hg}–${m.res.ag})</span>`:''}</div>
+      <div style="flex:1.2;min-width:165px"><b style="color:var(--a1)">${pick.l}</b></div>
+      <div style="font-family:var(--disp);color:var(--a3);font-weight:700;min-width:80px;text-align:right">~${pick.odds.toFixed(2)}</div>
+      <div style="min-width:96px;text-align:right">${badge}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('daily').innerHTML=`
+   <div class="card"><h3>📅 Napi tipp — minden VB-napra egy ~1,7–2,0 odds tipp</h3>
+     <div class="note" style="margin-top:0;margin-bottom:13px">Naponta <b>egyetlen</b>, közepesen bátor tipp a modell szerinti <b>~1,7–2,0 közötti</b> szorzóval (a sávban a legnagyobb eséllyel bejövő). ${tot?`Eddigi találat: <b style="color:var(--a1)">${hit}/${tot}</b> (${(hit/tot*100).toFixed(0)}%).`:''} A szorzó <b>becsült</b> — pontosat a Tippmixen nézz.</div>
+     ${rows}
+   </div>`;
+}
+/* ---- Meglepetés-radar ---- */
+function renderUpset(){
+  const list=ALLPAIRS.filter(m=>!m.res).map(m=>{const p=predFor(m);
+    const homeDog=TEAMS[m.a].elo<TEAMS[m.b].elo;const dog=homeDog?m.a:m.b;
+    const dogWin=homeDog?p.pH:p.pA;return {m,dog,dogWin,dogNoLose:dogWin+p.pD};})
+    .filter(x=>x.dogWin>=0.22).sort((a,b)=>b.dogWin-a.dogWin).slice(0,16);
+  const rows=list.map(x=>{const m=x.m;
+    return `<div class="bankrow">
+      <div style="min-width:108px;font-family:var(--disp);font-size:12px;color:var(--mut)">${fmtDate(m.d)}</div>
+      <div style="flex:1;min-width:175px;font-weight:700">${TEAMS[m.a].fl} ${m.a} <span style="color:var(--mut2)">–</span> ${m.b} ${TEAMS[m.b].fl}</div>
+      <div style="flex:1;min-width:150px">Meglepő: <b style="color:var(--a3)">${TEAMS[x.dog].n}</b></div>
+      <div style="min-width:150px;text-align:right;font-family:var(--disp);font-size:12px">győz <b style="color:var(--a1)">${pc(x.dogWin)}</b> · nem veszít <b>${pc(x.dogNoLose)}</b></div>
+    </div>`;}).join('');
+  document.getElementById('upset').innerHTML=`
+   <div class="card"><h3>🎲 Meglepetés-radar — ahol az esélytelenebb csapat odacsaphat</h3>
+     <div class="note" style="margin-top:0;margin-bottom:13px">A hátralévő meccsek, ahol a papíron <b>gyengébb</b> (alacsonyabb Elo) csapatnak a legnagyobb az esélye nyerni — itt botolhat meg a favorit. A meglepetés-győzelem esélye szerint rendezve.</div>
+     ${rows||'<div style="color:var(--mut)">Nincs kiemelt meglepetés-meccs.</div>'}
+   </div>`;
+}
+/* ---- Gólkirály-esély ---- */
+function renderScorer(){
+  const T=Object.keys(TEAMS);const atk={};
+  T.forEach(t=>{let s=0,n=0;T.forEach(o=>{if(o!==t){s+=lambdas(t,o)[0];n++;}});atk[t]=s/n;});
+  const list=T.map(t=>{const em=3+(SIM[t].q+SIM[t].r16+SIM[t].qf+SIM[t].sf+SIM[t].fin);
+    return {t,star:TEAMS[t].st,xg:atk[t]*em*0.34};}).sort((a,b)=>b.xg-a.xg).slice(0,16);
+  const mx=list[0].xg;
+  const rows=list.map((x,i)=>`<div class="champrow"><span class="rk">${i+1}</span>
+     <span class="team"><span class="fl">${TEAMS[x.t].fl}</span>${x.star}<span class="code">${x.t}</span></span>
+     <div class="bw"><div class="bar alt"><i style="--w:${(x.xg/mx*100).toFixed(0)}%"></i></div></div>
+     <span class="pct">${x.xg.toFixed(1)} gól</span></div>`).join('');
+  document.getElementById('scorer').innerHTML=`
+   <div class="card"><h3>🥅 Gólkirály-esély — várható tornagólok (becslés)</h3>
+     <div class="note" style="margin-top:0;margin-bottom:13px">Csapat támadóereje × várható meccsek száma (továbbjutási esély szerint) × a sztárjátékos gólrészesedése. <b>Becslés</b> a legesélyesebb gólkirály-jelöltekre — sérülést/formát nem számol.</div>
+     ${rows}
+   </div>`;
+}
 function renderBank(){
   const items=ALLPAIRS.map(m=>({m,bk:banker(predFor(m))}));
   const rem=items.filter(x=>!x.m.res);
@@ -685,14 +781,17 @@ function matchCard(m){
     <div class="mini"><i class="h" style="width:${hp}%"></i><i class="d" style="width:${dp}%"></i><i class="a" style="width:${ap}%"></i></div>
     <div class="legend"><span><i class="dot" style="background:var(--a2)"></i>${A.n} ${hp.toFixed(0)}%</span><span><i class="dot" style="background:var(--mut2)"></i>Döntetlen ${dp.toFixed(0)}%</span><span><i class="dot" style="background:var(--a4)"></i>${B.n} ${ap.toFixed(0)}%</span></div>
     <div class="mkts">
-      <div class="mkt"><h4>Végeredmény (1X2) – esélyek</h4>${mrow('1 · '+A.n,p.pH)}${mrow('X · Döntetlen',p.pD)}${mrow('2 · '+B.n,p.pA)}</div>
+      <div class="mkt"><h4>Végeredmény (1X2)</h4><div class="betrow">
+        <div class="betbtn ${p.pH>=p.pD&&p.pH>=p.pA?'top':''}"><span class="bl">1 · ${A.n}</span><span class="bv">${(p.pH*100).toFixed(0)}%</span></div>
+        <div class="betbtn ${p.pD>p.pH&&p.pD>=p.pA?'top':''}"><span class="bl">X · Döntetlen</span><span class="bv">${(p.pD*100).toFixed(0)}%</span></div>
+        <div class="betbtn ${p.pA>p.pH&&p.pA>p.pD?'top':''}"><span class="bl">2 · ${B.n}</span><span class="bv">${(p.pA*100).toFixed(0)}%</span></div></div></div>
       <div class="mkt"><h4>Kétesély</h4>${mrow('1X · '+A.n+' v. X',p.dc.hd)}${mrow('12 · nincs döntetlen',p.dc.ha)}${mrow('X2 · '+B.n+' v. X',p.dc.da)}</div>
       <div class="mkt"><h4>Gólszám (Over/Under)</h4>${mrow('Több mint 0,5',p.ov05)}${mrow('Több mint 1,5',p.ov[1.5])}${mrow('Több mint 2,5',p.ov[2.5])}${mrow('Kevesebb mint 2,5',p.un[2.5])}</div>
       <div class="mkt"><h4>Mindkét csapat gólt szerez</h4>${mrow('Igen',p.btts,'btts')}${mrow('Nem',p.bttsN,'btts')}<h4 style="margin-top:11px">Tét visszajár döntetlennél</h4>${mrow(A.n,p.dnbH,'dnb')}${mrow(B.n,p.dnbA,'dnb')}</div>
       <div class="mkt"><h4>Pontos végeredmény (Top 6)</h4>${p.cs.map(c=>mrow(c.s,c.p,'cs')).join('')}</div>
       <div class="mkt"><h4>Hendikep & Félidő</h4>${mrow(A.n+' -1,5',p.hcpH1)}${mrow(B.n+' -1,5',p.hcpA1)}<h4 style="margin-top:11px">Félidei állás</h4>${mrow('1 · '+A.n,p.htH)}${mrow('X · Döntetlen',p.htD)}${mrow('2 · '+B.n,p.htA)}</div>
       <div class="mkt"><h4>Gólszerző (bármikor)</h4>${mrow(A.st,p.gsA)}${mrow(B.st,p.gsB)}<h4 style="margin-top:11px">Kapott gól nélkül</h4>${mrow(A.n+' nem kap gólt',p.csH)}${mrow(B.n+' nem kap gólt',p.csA)}</div>
-      <div class="mkt" style="background:rgba(52,227,176,.06);border-color:rgba(52,227,176,.25)"><h4 style="color:var(--a1)">⭐ Modell ajánlások</h4>
+      <div class="mkt" style="background:rgba(45,222,110,.06);border-color:rgba(45,222,110,.25)"><h4 style="color:var(--a1)">⭐ Modell ajánlások</h4>
         <div class="row"><span class="sel">🛡️ Bankó: ${bk.l}</span><span class="pp">${pc(bk.pr)}</span></div>
         <div style="margin:5px 0"><span class="conf ${bk.conf[1]}">${bk.conf[0]}</span></div>
         <div class="row"><span class="sel">💰 Javasolt tét (${(stakeFor(bk.pr).pct*100).toFixed(0)}% tőke)</span><span class="od" style="color:var(--a3)">${ft(stakeFor(bk.pr).amt)}</span></div>
