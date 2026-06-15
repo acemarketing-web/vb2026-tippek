@@ -235,7 +235,7 @@
 
   <div class="foot">
     <div class="disc">⚠️ <b>18+ · Felelős játék.</b> Ez statisztikai modell (Elo-rating + Poisson gólmodell + Monte Carlo a hivatalos kieséses ágrajzzal), nem garantált jóslat. A dashboard <b>csak tippeket és esélyeket (%) ad, oddsot nem</b> — a pontos szorzókat fogadás előtt nézd meg a Tippmixen. Csak annyit tegyél fel, amennyit elviselsz elveszíteni. Segélyvonal: 06-80-505-505.</div>
-    <p style="margin-top:14px">Állás: 2026.06.13. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
+    <p style="margin-top:14px">Állás: 2026.06.15. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
   </div>
 </div>
 
@@ -312,7 +312,7 @@ for(const c in TEAMS){TEAMS[c].em=TEAMS[c].fl;TEAMS[c].fl=flagImg(c);}
 /* ============================================================
    TELJES MENETREND (időrendben, dátummal) – 72 csoportmeccs
    ============================================================ */
-const TODAY='2026-06-13';
+const TODAY='2026-06-15';
 const FIXTURES=[
   {d:'2026-06-11',g:'A',h:'MEX',a:'RSA'},{d:'2026-06-11',g:'A',h:'KOR',a:'CZE'},
   {d:'2026-06-12',g:'B',h:'CAN',a:'BIH'},{d:'2026-06-12',g:'D',h:'USA',a:'PAR'},
@@ -340,6 +340,7 @@ const SEED_RESULTS=[
   {g:'E',h:'GER',a:'CUW',hg:7,ag:1},
   {g:'F',h:'NED',a:'JPN',hg:2,ag:2},{g:'E',h:'CIV',a:'ECU',hg:1,ag:0},
   {g:'F',h:'SWE',a:'TUN',hg:5,ag:1},
+  {g:'H',h:'ESP',a:'CPV',hg:0,ag:0},
 ];
 let RESULTS=loadResults();
 function loadResults(){try{const s=localStorage.getItem('vb26res');if(s)return JSON.parse(s);}catch(e){}return SEED_RESULTS.map(r=>({...r}));}
@@ -625,7 +626,7 @@ function renderOverview(){
       <p>A fő favorit <b>${TEAMS[fav].n}</b> (${pc(SIM[fav].ch)} bajnoki esély), nyomában <b>${TEAMS[sec].n}</b> (${pc(SIM[sec].ch)}) és <b>${TEAMS[thi].n}</b> (${pc(SIM[thi].ch)}).</p>
       <p>A determinisztikus ágrajz a <b>${TEAMS[PB.box['M104'].a].n} – ${TEAMS[PB.box['M104'].b].n}</b> döntőt vetíti előre, a kupát <b>${TEAMS[PB.champ].n}</b> emeli a magasba (teljes út: 🗺️ Ágrajz fül).</p>
       <p>Sötét ló: <b>${TEAMS[dark].n}</b> — ${pc(SIM[dark].ch)} címeséllyel a papírformán felül teljesíthet. A legnehezebb csoport a <b>${gd}-csoport</b>.</p>
-      <p>Eddig: <b>USA 4–1 Paraguay</b>, Mexikó 2–0 Dél-Afrika, Dél-Korea 2–1 Csehország, Kanada 1–1 Bosznia.</p>
+      <p>Eddigi nagy meglepetés: a <b>Zöld-foki-szigetek 0–0-t</b> harcolt ki Spanyolország ellen! Gólzáporok: <b>Németország 7–1</b> Curaçao, <b>Svédország 5–1</b> Tunézia. Az USA 4–1-re verte Paraguayt.</p>
     </div></div>`;
 }
 
