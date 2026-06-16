@@ -141,6 +141,10 @@
   .oddedit label{font-size:10px;color:var(--mut);font-family:var(--disp)}
   .oddedit input{width:56px;padding:5px 7px;font-size:12px}
   .realbadge{font-family:var(--disp);font-size:9px;font-weight:700;color:#04121a;background:var(--a2);padding:2px 7px;border-radius:5px;margin-left:6px}
+  .hb{font-family:var(--disp);font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap;display:inline-block}
+  .hb-y{background:linear-gradient(135deg,#2dde6e,#0fb851);color:#04121a}
+  .hb-n{background:rgba(255,84,112,.16);color:#ff8aa0;border:1px solid rgba(255,84,112,.4)}
+  .hb-p{background:rgba(255,194,61,.16);color:#ffce6b;border:1px solid rgba(255,194,61,.4)}
   .pill{display:inline-block;font-family:var(--disp);font-size:11px;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--mut);font-weight:600}
   .pos{font-family:var(--disp);width:22px;height:22px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
   .p1{background:var(--grad);color:#04121a} .p2{background:linear-gradient(135deg,#9ae65c,#0fb851);color:#04121a}
@@ -240,7 +244,7 @@
 
   <div class="foot">
     <div class="disc">⚠️ <b>18+ · Felelős játék.</b> Ez statisztikai modell (Elo-rating + Poisson gólmodell + Monte Carlo a hivatalos kieséses ágrajzzal), nem garantált jóslat. A dashboard <b>csak tippeket és esélyeket (%) ad, oddsot nem</b> — a pontos szorzókat fogadás előtt nézd meg a Tippmixen. Csak annyit tegyél fel, amennyit elviselsz elveszíteni. Segélyvonal: 06-80-505-505.</div>
-    <p style="margin-top:14px">Állás: 2026.06.15. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
+    <p style="margin-top:14px">Állás: 2026.06.16. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
   </div>
 </div>
 
@@ -317,7 +321,7 @@ for(const c in TEAMS){TEAMS[c].em=TEAMS[c].fl;TEAMS[c].fl=flagImg(c);}
 /* ============================================================
    TELJES MENETREND (időrendben, dátummal) – 72 csoportmeccs
    ============================================================ */
-const TODAY='2026-06-15';
+const TODAY='2026-06-16';
 const FIXTURES=[
   {d:'2026-06-11',g:'A',h:'MEX',a:'RSA'},{d:'2026-06-11',g:'A',h:'KOR',a:'CZE'},
   {d:'2026-06-12',g:'B',h:'CAN',a:'BIH'},{d:'2026-06-12',g:'D',h:'USA',a:'PAR'},
@@ -440,16 +444,16 @@ function bestTip(p){
 function banker(p){
   const A=TEAMS[p.a].n,B=TEAMS[p.b].n;
   const cand=[
-    {l:A+' nem kap ki (1X)',pr:p.dc.hd},{l:B+' nem kap ki (X2)',pr:p.dc.da},{l:'Nem lesz döntetlen (12)',pr:p.dc.ha},
-    {l:A+' győzelem',pr:p.pH},{l:B+' győzelem',pr:p.pA},
-    {l:'Lesz gól a meccsen (Over 0,5)',pr:p.ov05},{l:'Több mint 1,5 gól',pr:p.ov[1.5]},
-    {l:'Kevesebb mint 3,5 gól',pr:p.un[3.5]},{l:'Kevesebb mint 4,5 gól',pr:p.un[4.5]},
-    {l:'Mindkét csapat gólt szerez',pr:p.btts},{l:'Nem szerez mindkét csapat gólt',pr:p.bttsN},
-    {l:A+' szerez gólt',pr:p.scH},{l:B+' szerez gólt',pr:p.scA},
-    {l:A+' (tét vissza döntetlennél)',pr:p.dnbH}];
+    {k:'1X',l:A+' nem kap ki (1X)',pr:p.dc.hd},{k:'X2',l:B+' nem kap ki (X2)',pr:p.dc.da},{k:'12',l:'Nem lesz döntetlen (12)',pr:p.dc.ha},
+    {k:'1',l:A+' győzelem',pr:p.pH},{k:'2',l:B+' győzelem',pr:p.pA},
+    {k:'O05',l:'Lesz gól a meccsen (Over 0,5)',pr:p.ov05},{k:'O15',l:'Több mint 1,5 gól',pr:p.ov[1.5]},
+    {k:'U35',l:'Kevesebb mint 3,5 gól',pr:p.un[3.5]},{k:'U45',l:'Kevesebb mint 4,5 gól',pr:p.un[4.5]},
+    {k:'BY',l:'Mindkét csapat gólt szerez',pr:p.btts},{k:'BN',l:'Nem szerez mindkét csapat gólt',pr:p.bttsN},
+    {k:'HS',l:A+' szerez gólt',pr:p.scH},{k:'AS',l:B+' szerez gólt',pr:p.scA},
+    {k:'DH',l:A+' (tét vissza döntetlennél)',pr:p.dnbH}];
   const best=cand.sort((x,y)=>y.pr-x.pr)[0];
   const c=best.pr>=0.9?['Bombabiztos','c-bb']:best.pr>=0.8?['Nagyon erős','c-vh']:best.pr>=0.7?['Erős','c-h']:['Jó','c-m'];
-  return {l:best.l,pr:best.pr,odds:od(best.pr),conf:c};
+  return {l:best.l,pr:best.pr,odds:od(best.pr),conf:c,k:best.k};
 }
 
 /* ============================================================
@@ -615,7 +619,7 @@ function renderOverview(){
   const bars=top.map((t,i)=>`<div class="champrow"><span class="rk">${i+1}</span>${TMs(t)}<div class="bw"><div class="bar"><i style="--w:${(SIM[t].ch/mx*100).toFixed(0)}%"></i></div></div><span class="pct">${pc(SIM[t].ch)}</span></div>`).join('');
   const today=ALLPAIRS.filter(m=>m.d===TODAY);
   const todayHtml=today.length?today.map(m=>{const p=predFor(m);const bk=banker(p);
-    return `<div class="bankrow"><div class="bm"><span class="fl">${TEAMS[m.a].fl}</span>${m.a} <span style="color:var(--mut2)">–</span> ${m.b} <span class="fl">${TEAMS[m.b].fl}</span></div><div class="bt">${m.res?`<b>Vége: ${m.res.hg}–${m.res.ag}</b>`:'Bankó: <b>'+bk.l+'</b>'}</div>${m.res?'':`<div class="bp">${pc(bk.pr)}</div><div class="bo" style="color:var(--a3)">💰 ${ft(stakeFor(bk.pr).amt)}</div>`}</div>`;}).join(''):'<div style="color:var(--mut)">Ma nincs meccs.</div>';
+    return `<div class="bankrow"><div class="bm"><span class="fl">${TEAMS[m.a].fl}</span>${m.a} <span style="color:var(--mut2)">–</span> ${m.b} <span class="fl">${TEAMS[m.b].fl}</span></div><div class="bt">${m.res?`<b>${m.res.hg}–${m.res.ag}</b> · tipp: ${bk.l}`:'Bankó: <b>'+bk.l+'</b>'}</div>${m.res?hitBadge(bk.k,m):`<div class="bp">${pc(bk.pr)}</div><div class="bo" style="color:var(--a3)">💰 ${ft(stakeFor(bk.pr).amt)}</div>`}</div>`;}).join(''):'<div style="color:var(--mut)">Ma nincs meccs.</div>';
   document.getElementById('ov').innerHTML=`
   <div class="grid g4" style="margin-bottom:16px">
     <div class="stat"><div class="v">${pc(SIM[fav].ch)}</div><div class="l">Esélyes a címre</div><div class="x">${TEAMS[fav].fl} ${TEAMS[fav].n}</div></div>
@@ -652,8 +656,15 @@ function dailyCands(m){
 }
 function evalKey(k,hg,ag){const t=hg+ag;switch(k){
   case'1':return hg>ag;case'2':return ag>hg;case'1X':return hg>=ag;case'X2':return ag>=hg;
-  case'12':return hg!==ag;case'O15':return t>1.5;case'O25':return t>2.5;case'U25':return t<2.5;
-  case'U35':return t<3.5;case'BY':return hg>=1&&ag>=1;case'BN':return!(hg>=1&&ag>=1);}return null;}
+  case'12':return hg!==ag;case'O05':return t>0.5;case'O15':return t>1.5;case'O25':return t>2.5;
+  case'U25':return t<2.5;case'U35':return t<3.5;case'U45':return t<4.5;
+  case'BY':return hg>=1&&ag>=1;case'BN':return!(hg>=1&&ag>=1);
+  case'HS':return hg>=1;case'AS':return ag>=1;
+  case'DH':return hg>ag?true:(hg===ag?null:false);}return null;}
+/* tipp-találat jelvény: ✓ bejött / ✗ nem / ↺ tét vissza (csak lejátszott meccsre) */
+function hitBadge(k,m){if(!m.res)return '';const w=evalKey(k,m.res.hg,m.res.ag);
+  if(w===null)return '<span class="hb hb-p">↺ tét vissza</span>';
+  return w?'<span class="hb hb-y">✓ bejött</span>':'<span class="hb hb-n">✗ nem jött be</span>';}
 function renderDaily(){
   const days=[...new Set(FIXTURES.map(f=>f.d))].sort();let hit=0,tot=0;
   const rows=days.map(d=>{
@@ -728,8 +739,8 @@ function renderMath(){
       <td class="n" style="font-size:12px;color:var(--a3);font-family:var(--disp)">${p.lA.toFixed(2)}–${p.lB.toFixed(2)}</td>
       <td class="n">${(p.pH*100).toFixed(0)}</td><td class="n" style="color:var(--mut)">${(p.pD*100).toFixed(0)}</td><td class="n">${(p.pA*100).toFixed(0)}</td>
       <td class="n" style="font-family:var(--disp)">${p.exp.toFixed(2)}</td>
-      <td>${done?'<span style="color:var(--mut2);font-size:11px">vége</span>':`<span class="pickchip">${bk.l}</span>`}</td>
-      <td class="n">${done?'':`<b style="color:var(--a1);font-family:var(--disp)">${(bk.pr*100).toFixed(0)}%</b>`}</td>
+      <td>${done?`<span style="font-size:11px;color:var(--mut)">${bk.l}</span>`:`<span class="pickchip">${bk.l}</span>`}</td>
+      <td class="n">${done?hitBadge(bk.k,m):`<b style="color:var(--a1);font-family:var(--disp)">${(bk.pr*100).toFixed(0)}%</b>`}</td>
     </tr>`;
   }).join('');
   document.getElementById('math').innerHTML=`
@@ -751,11 +762,12 @@ function renderBank(){
   const fav=rem.map(x=>{const p=predFor(x.m);const win=p.pH>=p.pA?{l:TEAMS[x.m.a].n+' győz',pr:p.pH}:{l:TEAMS[x.m.b].n+' győz',pr:p.pA};return{m:x.m,win};})
     .sort((a,b)=>b.win.pr-a.win.pr).slice(0,5);
   let fP=1;fav.forEach(x=>{fP*=x.win.pr;});
-  const bankRow=m=>{const bk=banker(predFor(m));const r=relDay(m.d);
+  let bHit=0,bTot=0;ALLPAIRS.forEach(m=>{if(m.res){const b=banker(predFor(m));const w=evalKey(b.k,m.res.hg,m.res.ag);if(w!==null){bTot++;if(w)bHit++;}}});
+  const bankRow=m=>{const bk=banker(predFor(m));
     return `<div class="bankrow">
-      <div class="bm"><span class="fl">${TEAMS[m.a].fl}</span>${m.a}<span style="color:var(--mut2)">–</span>${m.b}<span class="fl">${TEAMS[m.b].fl}</span></div>
-      <div class="bt">${m.res?`<b style="color:var(--mut)">Lejátszott: ${m.res.hg}–${m.res.ag}</b>`:'<b>'+bk.l+'</b>'}</div>
-      ${m.res?'':`<span class="conf ${bk.conf[1]}">${bk.conf[0]}</span><div class="bp">${pc(bk.pr)}</div><div class="bo" style="color:var(--a3);min-width:84px">💰 ${ft(stakeFor(bk.pr).amt)}</div>`}
+      <div class="bm"><span class="fl">${TEAMS[m.a].fl}</span>${m.a}<span style="color:var(--mut2)">–</span>${m.b}<span class="fl">${TEAMS[m.b].fl}</span>${m.res?` <span style="color:var(--mut);font-weight:400">${m.res.hg}–${m.res.ag}</span>`:''}</div>
+      <div class="bt"><b>${bk.l}</b></div>
+      ${m.res?hitBadge(bk.k,m):`<span class="conf ${bk.conf[1]}">${bk.conf[0]}</span><div class="bp">${pc(bk.pr)}</div><div class="bo" style="color:var(--a3);min-width:84px">💰 ${ft(stakeFor(bk.pr).amt)}</div>`}
     </div>`;};
   document.getElementById('bank').innerHTML=`
    <div class="grid g2" style="margin-bottom:18px">
@@ -767,7 +779,7 @@ function renderBank(){
        <div class="tot"><span>Mind az 5 bejön</span><span class="od big">~${pc(fP)}</span></div></div>
    </div>
    <div class="card"><h3>🎯 Minden meccs kiemelt bankó tippje – időrendben</h3>
-     <div class="note" style="margin-top:0;margin-bottom:6px">Meccsenként a <b>legnagyobb eséllyel bejövő</b> tipp (az összes piacból kiválasztva) a bejövési <b>%</b>-kal. A „Bombabiztos" = 90%+ esély. A 💰 <b>javasolt tét</b> a tőkéd %-a (magabiztosság szerint), ${ft(BANKROLL)} tőkével számolva. <b>Oddsot szándékosan nem írunk ki</b> — a pontos szorzót fogadás előtt nézd meg a Tippmixen.</div>
+     <div class="note" style="margin-top:0;margin-bottom:6px">Meccsenként a <b>legnagyobb eséllyel bejövő</b> tipp a bejövési <b>%</b>-kal. A lejátszott meccseknél látod, hogy a tipp <b style="color:var(--a1)">✓ bejött</b> vagy <b style="color:var(--a4)">✗ nem</b>. ${bTot?`Eddigi bankó-találat: <b style="color:var(--a1)">${bHit}/${bTot}</b> (${(bHit/bTot*100).toFixed(0)}%).`:''} A 💰 <b>javasolt tét</b> a tőkéd %-a, ${ft(BANKROLL)} tőkével. Oddsot a pontosság miatt a Tippmixen nézz.</div>
      ${withDateHeaders(ALLPAIRS,bankRow)}
    </div>`;
 }
@@ -808,7 +820,7 @@ function matchCard(m){
   const hp=p.pH*100,dp=p.pD*100,ap=p.pA*100;
   return `<details class="match"><summary><span class="pill">${m.g}</span>
     <span class="mteams"><span class="fl">${A.fl}</span>${A.n}<span class="vs">vs</span><span class="fl">${B.fl}</span>${B.n}</span>
-    ${score}${tag}${done?'':`<span class="besttip">Tipp: <b>${bk.l}</b> · ${pc(bk.pr)}</span>`}
+    ${score}${tag}${done?`<span class="besttip" style="background:rgba(255,255,255,.04);border-color:var(--line);box-shadow:none">Tipp volt: <b style="color:var(--txt)">${bk.l}</b> ${hitBadge(bk.k,m)}</span>`:`<span class="besttip">Tipp: <b>${bk.l}</b> · ${pc(bk.pr)}</span>`}
   </summary><div class="mbody">
     <div class="mini"><i class="h" style="width:${hp}%"></i><i class="d" style="width:${dp}%"></i><i class="a" style="width:${ap}%"></i></div>
     <div class="legend"><span><i class="dot" style="background:var(--a2)"></i>${A.n} ${hp.toFixed(0)}%</span><span><i class="dot" style="background:var(--mut2)"></i>Döntetlen ${dp.toFixed(0)}%</span><span><i class="dot" style="background:var(--a4)"></i>${B.n} ${ap.toFixed(0)}%</span></div>
