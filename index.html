@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>VB 2026 ⚽ Tippelő Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -212,6 +215,7 @@
       <button data-t="daily">📅 Napi tipp</button>
       <button data-t="upset">🎲 Meglepetés</button>
       <button data-t="scorer">🥅 Gólkirály</button>
+      <button data-t="math">🧮 Matek-tipp</button>
       <button data-t="groups">🏆 Csoportok</button>
       <button data-t="matches">⚽ Meccsek</button>
       <button data-t="bracket">🗺️ Ágrajz</button>
@@ -226,6 +230,7 @@
   <section id="daily"></section>
   <section id="upset"></section>
   <section id="scorer"></section>
+  <section id="math"></section>
   <section id="groups"></section>
   <section id="matches"></section>
   <section id="bracket"></section>
@@ -588,7 +593,7 @@ function recompute(cb){
     renderAll();if(cb)cb();
   },40);
 }
-function renderAll(){renderOverview();renderBank();renderDaily();renderUpset();renderScorer();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
+function renderAll(){renderOverview();renderBank();renderDaily();renderUpset();renderScorer();renderMath();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
 
 /* dátum-fejléces lista építő */
 function withDateHeaders(list,rowFn){
@@ -710,6 +715,30 @@ function renderScorer(){
    <div class="card"><h3>🥅 Gólkirály-esély — várható tornagólok (becslés)</h3>
      <div class="note" style="margin-top:0;margin-bottom:13px">Csapat támadóereje × várható meccsek száma (továbbjutási esély szerint) × a sztárjátékos gólrészesedése. <b>Becslés</b> a legesélyesebb gólkirály-jelöltekre — sérülést/formát nem számol.</div>
      ${rows}
+   </div>`;
+}
+/* ---- Matek-tipp: minden meccsre a kiszámolt optimális fogadás ---- */
+function renderMath(){
+  const rows=ALLPAIRS.map(m=>{
+    const p=predFor(m);const bk=banker(p);const done=!!m.res;
+    return `<tr style="${done?'opacity:.45':''}">
+      <td style="white-space:nowrap;font-size:11px;color:var(--mut)">${fmtDate(m.d)}</td>
+      <td style="white-space:nowrap;font-weight:700">${TEAMS[m.a].fl} ${m.a} <span style="color:var(--mut2)">–</span> ${m.b} ${TEAMS[m.b].fl}${done?` <span style="color:var(--mut);font-weight:400">${m.res.hg}–${m.res.ag}</span>`:''}</td>
+      <td class="n" style="font-size:11px;color:var(--mut)">${TEAMS[m.a].elo}/${TEAMS[m.b].elo}</td>
+      <td class="n" style="font-size:12px;color:var(--a3);font-family:var(--disp)">${p.lA.toFixed(2)}–${p.lB.toFixed(2)}</td>
+      <td class="n">${(p.pH*100).toFixed(0)}</td><td class="n" style="color:var(--mut)">${(p.pD*100).toFixed(0)}</td><td class="n">${(p.pA*100).toFixed(0)}</td>
+      <td class="n" style="font-family:var(--disp)">${p.exp.toFixed(2)}</td>
+      <td>${done?'<span style="color:var(--mut2);font-size:11px">vége</span>':`<span class="pickchip">${bk.l}</span>`}</td>
+      <td class="n">${done?'':`<b style="color:var(--a1);font-family:var(--disp)">${(bk.pr*100).toFixed(0)}%</b>`}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('math').innerHTML=`
+   <div class="card"><h3>🧮 Matek-tipp — minden meccsre a kiszámolt optimális fogadás</h3>
+     <div class="note" style="margin-top:0;margin-bottom:13px">A számítás menete meccsenként: az <b>Elo-ratingből</b> (+ hazai pálya a rendezőknél) megkapjuk a két csapat <b>várható góljait</b> (λ, Poisson-modell), abból egy 9×9-es eredmény-mátrixszal az <b>összes piac valószínűségét</b>, és kiválasztjuk a <b>matematikailag legnagyobb eséllyel bejövő</b> fogadást. Oszlopok: Elo (H/V), várható gól (λ), 1/X/2 %, várható összgól (Σ), és az <b>optimális tipp</b> az esélyével.</div>
+     <div style="overflow-x:auto"><table>
+       <thead><tr><th>Dátum</th><th>Meccs</th><th class="n">Elo H/V</th><th class="n">λ H–V</th><th class="n">1</th><th class="n">X</th><th class="n">2</th><th class="n">Σgól</th><th>🎯 Optimális tipp</th><th class="n">Esély</th></tr></thead>
+       <tbody>${rows}</tbody>
+     </table></div>
    </div>`;
 }
 function renderBank(){
