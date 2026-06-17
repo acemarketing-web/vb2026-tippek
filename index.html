@@ -728,10 +728,13 @@ function renderScorer(){
      ${rows}
    </div>`;
 }
-/* ---- Matek-tipp: minden meccsre a kiszámolt optimális fogadás ---- */
+/* ---- Matek-tipp: minden meccsre a kiszámolt optimális fogadás + tét ---- */
+let MATHSTAKE=5000;
 function renderMath(){
+  const rem=ALLPAIRS.filter(m=>!m.res);let totStake=0,totWinAll=0,prodProb=1;
+  rem.forEach(m=>{const bk=banker(predFor(m));const o=1/bk.pr;totStake+=MATHSTAKE;totWinAll+=MATHSTAKE*o;prodProb*=bk.pr;});
   const rows=ALLPAIRS.map(m=>{
-    const p=predFor(m);const bk=banker(p);const done=!!m.res;
+    const p=predFor(m);const bk=banker(p);const done=!!m.res;const o=1/bk.pr;
     return `<tr style="${done?'opacity:.45':''}">
       <td style="white-space:nowrap;font-size:11px;color:var(--mut)">${fmtDate(m.d)}</td>
       <td style="white-space:nowrap;font-weight:700">${TEAMS[m.a].fl} ${m.a} <span style="color:var(--mut2)">–</span> ${m.b} ${TEAMS[m.b].fl}${done?` <span style="color:var(--mut);font-weight:400">${m.res.hg}–${m.res.ag}</span>`:''}</td>
@@ -741,16 +744,30 @@ function renderMath(){
       <td class="n" style="font-family:var(--disp)">${p.exp.toFixed(2)}</td>
       <td>${done?`<span style="font-size:11px;color:var(--mut)">${bk.l}</span>`:`<span class="pickchip">${bk.l}</span>`}</td>
       <td class="n">${done?hitBadge(bk.k,m):`<b style="color:var(--a1);font-family:var(--disp)">${(bk.pr*100).toFixed(0)}%</b>`}</td>
+      <td class="n" style="font-family:var(--disp);color:var(--a3)">${done?'—':'~'+o.toFixed(2)}</td>
+      <td class="n" style="font-family:var(--disp);color:var(--mut)">${done?'—':ft(MATHSTAKE)}</td>
+      <td class="n" style="font-family:var(--disp);color:var(--a1)">${done?'—':ft(Math.round(MATHSTAKE*o))}</td>
     </tr>`;
   }).join('');
   document.getElementById('math').innerHTML=`
-   <div class="card"><h3>🧮 Matek-tipp — minden meccsre a kiszámolt optimális fogadás</h3>
-     <div class="note" style="margin-top:0;margin-bottom:13px">A számítás menete meccsenként: az <b>Elo-ratingből</b> (+ hazai pálya a rendezőknél) megkapjuk a két csapat <b>várható góljait</b> (λ, Poisson-modell), abból egy 9×9-es eredmény-mátrixszal az <b>összes piac valószínűségét</b>, és kiválasztjuk a <b>matematikailag legnagyobb eséllyel bejövő</b> fogadást. Oszlopok: Elo (H/V), várható gól (λ), 1/X/2 %, várható összgól (Σ), és az <b>optimális tipp</b> az esélyével.</div>
+   <div class="card" style="margin-bottom:16px"><h3>💰 Ha minden Matek-tippre teszel</h3>
+     <div class="frm" style="margin-bottom:14px"><div class="fg"><label>Tét / tipp (Ft)</label><input type="number" id="mStake" value="${MATHSTAKE}" step="1000" style="width:120px"></div><button class="btn" id="mGo">Számol</button></div>
+     <div class="grid g4">
+       <div class="stat"><div class="v">${rem.length}</div><div class="l">Hátralévő tipp</div></div>
+       <div class="stat"><div class="v">${ft(totStake)}</div><div class="l">Össztét (mindre)</div></div>
+       <div class="stat"><div class="v">${ft(Math.round(totWinAll))}</div><div class="l">Ha MIND bejön</div><div class="x" style="color:var(--a1)">+${ft(Math.round(totWinAll-totStake))} profit</div></div>
+       <div class="stat"><div class="v">~${ft(totStake)}</div><div class="l">Reálisan a végén</div><div class="x">kb. nullszaldó</div></div>
+     </div>
+     <div class="disc" style="margin-top:14px">🎯 <b>Őszintén:</b> az optimális (legbiztosabb) tippek ~90%+ esélyűek, de pont ezért <b>kis oddsúak</b> (~1,05–1,15). Ha mind a ${rem.length} bejönne: <b>${ft(Math.round(totWinAll))}</b> (+${ft(Math.round(totWinAll-totStake))}) — de hogy MIND bejöjjön, csak <b>${(prodProb*100).toFixed(1)}%</b> az esély. Reálisan ezek <b>~a fair árat fizetik → hosszú távon kb. nullszaldó</b> (a Tippmix margójával enyhén mínusz). Nagyobb hozamhoz a <b>📅 Napi tipp</b> (1,7–2,0 odds) vagy value-keresés kell. Az odds itt <b>becsült</b>.</div>
+   </div>
+   <div class="card"><h3>🧮 Matek-tipp — minden meccsre az optimális fogadás + tét</h3>
+     <div class="note" style="margin-top:0;margin-bottom:13px">Meccsenként az Elo-ból számolt <b>várható gólok</b> (λ) és piac-valószínűségek alapján a <b>legnagyobb eséllyel bejövő</b> fogadás. A lejátszottaknál a <b>✓ bejött / ✗ nem</b> jelzi, helyes volt-e a tipp. Tét/tipp: <b>${ft(MATHSTAKE)}</b>, a nyeremény a becsült oddszal.</div>
      <div style="overflow-x:auto"><table>
-       <thead><tr><th>Dátum</th><th>Meccs</th><th class="n">Elo H/V</th><th class="n">λ H–V</th><th class="n">1</th><th class="n">X</th><th class="n">2</th><th class="n">Σgól</th><th>🎯 Optimális tipp</th><th class="n">Esély</th></tr></thead>
+       <thead><tr><th>Dátum</th><th>Meccs</th><th class="n">Elo H/V</th><th class="n">λ H–V</th><th class="n">1</th><th class="n">X</th><th class="n">2</th><th class="n">Σgól</th><th>🎯 Optimális tipp</th><th class="n">Esély/Talált</th><th class="n">~Odds</th><th class="n">Tét</th><th class="n">Nyer.</th></tr></thead>
        <tbody>${rows}</tbody>
      </table></div>
    </div>`;
+  const go=document.getElementById('mGo');if(go)go.onclick=()=>{const v=+document.getElementById('mStake').value;if(v>0){MATHSTAKE=v;renderMath();switchTab('math');}};
 }
 function renderBank(){
   const items=ALLPAIRS.map(m=>({m,bk:banker(predFor(m))}));
