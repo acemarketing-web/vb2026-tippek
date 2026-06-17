@@ -145,6 +145,11 @@
   .hb-y{background:linear-gradient(135deg,#2dde6e,#0fb851);color:#04121a}
   .hb-n{background:rgba(255,84,112,.16);color:#ff8aa0;border:1px solid rgba(255,84,112,.4)}
   .hb-p{background:rgba(255,194,61,.16);color:#ffce6b;border:1px solid rgba(255,194,61,.4)}
+  .combo-card{background:rgba(255,159,67,.06);border:1px solid rgba(255,159,67,.28);border-radius:13px;padding:13px 15px;margin-bottom:11px}
+  .combo-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--disp);font-weight:600;font-size:14px}
+  .combo-odds{font-family:var(--disp);font-weight:700;color:#ff9f43;font-size:20px;margin-left:auto}
+  .combo-leg{display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 0;border-top:1px dashed rgba(255,255,255,.08);flex-wrap:wrap}
+  .combo-leg b{color:var(--a1)} .combo-leg .lo{font-family:var(--disp);color:#ff9f43;font-weight:600}
   .pill{display:inline-block;font-family:var(--disp);font-size:11px;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--mut);font-weight:600}
   .pos{font-family:var(--disp);width:22px;height:22px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
   .p1{background:var(--grad);color:#04121a} .p2{background:linear-gradient(135deg,#9ae65c,#0fb851);color:#04121a}
@@ -220,6 +225,7 @@
       <button data-t="upset">🎲 Meglepetés</button>
       <button data-t="scorer">🥅 Gólkirály</button>
       <button data-t="math">🧮 Matek-tipp</button>
+      <button data-t="bold">🔥 Merész</button>
       <button data-t="groups">🏆 Csoportok</button>
       <button data-t="matches">⚽ Meccsek</button>
       <button data-t="bracket">🗺️ Ágrajz</button>
@@ -235,6 +241,7 @@
   <section id="upset"></section>
   <section id="scorer"></section>
   <section id="math"></section>
+  <section id="bold"></section>
   <section id="groups"></section>
   <section id="matches"></section>
   <section id="bracket"></section>
@@ -600,7 +607,7 @@ function recompute(cb){
     renderAll();if(cb)cb();
   },40);
 }
-function renderAll(){renderOverview();renderBank();renderDaily();renderUpset();renderScorer();renderMath();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
+function renderAll(){renderOverview();renderBank();renderDaily();renderUpset();renderScorer();renderMath();renderBold();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
 
 /* dátum-fejléces lista építő */
 function withDateHeaders(list,rowFn){
@@ -729,6 +736,48 @@ function renderScorer(){
    <div class="card"><h3>🥅 Gólkirály-esély — várható tornagólok (becslés)</h3>
      <div class="note" style="margin-top:0;margin-bottom:13px">Csapat támadóereje × várható meccsek száma (továbbjutási esély szerint) × a sztárjátékos gólrészesedése. <b>Becslés</b> a legesélyesebb gólkirály-jelöltekre — sérülést/formát nem számol.</div>
      ${rows}
+   </div>`;
+}
+/* ---- Merész tipp: nagyobb oddsú (bátrabb) választás ---- */
+function bolderTip(p){
+  const A=TEAMS[p.a].n,B=TEAMS[p.b].n;
+  const cand=[
+    {k:'1',l:A+' győzelem',pr:p.pH},{k:'2',l:B+' győzelem',pr:p.pA},
+    {k:'1X',l:A+' v. döntetlen',pr:p.dc.hd},{k:'X2',l:B+' v. döntetlen',pr:p.dc.da},{k:'12',l:'Nem lesz döntetlen',pr:p.dc.ha},
+    {k:'O15',l:'Több mint 1,5 gól',pr:p.ov[1.5]},{k:'O25',l:'Több mint 2,5 gól',pr:p.ov[2.5]},{k:'U25',l:'Kevesebb mint 2,5 gól',pr:p.un[2.5]},
+    {k:'BY',l:'Mindkét csapat gólt szerez',pr:p.btts},{k:'BN',l:'Nem szerez mindkét csapat gólt',pr:p.bttsN}];
+  const band=cand.filter(c=>1/c.pr>=1.6&&1/c.pr<=2.8).sort((a,b)=>b.pr-a.pr);
+  const pick=band[0]||cand.slice().sort((a,b)=>b.pr-a.pr)[0];
+  return {l:pick.l,pr:pick.pr,k:pick.k,odds:1/pick.pr};
+}
+/* ---- Merész fül: napi kötések + merész szimplák ---- */
+function renderBold(){
+  const days=[...new Set(FIXTURES.map(f=>f.d))].sort();let hit=0,tot=0;
+  const cards=days.map(d=>{
+    const ms=ALLPAIRS.filter(m=>m.d===d);
+    const legs=ms.map(m=>({m,bt:bolderTip(predFor(m))})).sort((a,b)=>b.bt.pr-a.bt.pr).slice(0,Math.min(3,ms.length));
+    if(legs.length<2)return '';
+    let odds=1,prob=1,allDone=true,allWon=true;
+    legs.forEach(l=>{odds*=l.bt.odds;prob*=l.bt.pr;if(!l.m.res)allDone=false;else if(!evalKey(l.bt.k,l.m.res.hg,l.m.res.ag))allWon=false;});
+    const rel=relDay(d);let badge;
+    if(allDone){tot++;if(allWon)hit++;badge=allWon?'<span class="hb hb-y">✓ NYERŐ</span>':'<span class="hb hb-n">✗ bukó</span>';}
+    else badge='<span class="pickchip">AJÁNLOTT</span>';
+    return `<div class="combo-card">
+      <div class="combo-head"><span>${fmtDate(d)}</span>${rel?`<span class="dchip ${rel[1]}">${rel[0]}</span>`:''}<span style="color:var(--mut)">${legs.length}-es kötés</span>${badge}<span class="combo-odds">${odds.toFixed(2)}×</span></div>
+      ${legs.map(l=>`<div class="combo-leg"><span class="fl">${TEAMS[l.m.a].fl}</span>${l.m.a}–${l.m.b}<span class="fl">${TEAMS[l.m.b].fl}</span>${l.m.res?` <span style="color:var(--mut)">${l.m.res.hg}–${l.m.res.ag}</span>`:''} · <b>${l.bt.l}</b> <span class="lo">~${l.bt.odds.toFixed(2)}</span> ${l.m.res?hitBadge(l.bt.k,l.m):''}</div>`).join('')}
+      <div style="font-size:11px;color:var(--mut2);margin-top:7px">Eredő odds: <b style="color:#ff9f43">${odds.toFixed(2)}×</b> · 1000 Ft → <b>${ft(Math.round(odds*1000))}</b>${allDone?'':` · esély mind: ~${(prob*100).toFixed(0)}%`}</div>
+    </div>`;
+  }).join('');
+  const singleRows=ALLPAIRS.map(m=>{const bt=bolderTip(predFor(m));const done=!!m.res;
+    return `<tr style="${done?'opacity:.5':''}"><td style="font-size:11px;color:var(--mut);white-space:nowrap">${fmtDate(m.d)}</td><td style="white-space:nowrap;font-weight:700">${TEAMS[m.a].fl} ${m.a} <span style="color:var(--mut2)">–</span> ${m.b} ${TEAMS[m.b].fl}${done?` <span style="color:var(--mut);font-weight:400">${m.res.hg}–${m.res.ag}</span>`:''}</td><td><b style="color:#ff9f43">${bt.l}</b></td><td class="n" style="font-family:var(--disp);color:var(--a3)">~${bt.odds.toFixed(2)}</td><td class="n">${done?hitBadge(bt.k,m):`<span style="color:var(--mut)">${(bt.pr*100).toFixed(0)}%</span>`}</td></tr>`;}).join('');
+  document.getElementById('bold').innerHTML=`
+   <div class="card" style="margin-bottom:16px"><h3>🔥 Merész napi kötések — magasabb odds</h3>
+     <div class="note" style="margin-top:0;margin-bottom:13px">Naponta egy <b>kötés (kombi)</b> a nap 2–3 legjobb <b>bátrabb</b> tippjéből → magasabb eredő odds. A lejátszott napoknál <b>✓ NYERŐ</b> (ha MINDEN láb bejött) vagy <b>✗ bukó</b>. ${tot?`Eddigi kötés-találat: <b style="color:var(--a1)">${hit}/${tot}</b> (${(hit/tot*100).toFixed(0)}%).`:''} Az odds <b>becsült</b> — pontosat a Tippmixen.</div>
+     ${cards}
+   </div>
+   <div class="card"><h3>⚡ Merész szimplák — meccsenként egy bátrabb tipp</h3>
+     <div class="note" style="margin-top:0;margin-bottom:13px">Minden meccsre egy nagyobb oddsú (bátrabb) tipp; a lejátszottaknál ✓/✗ találattal.</div>
+     <div style="overflow-x:auto"><table><thead><tr><th>Dátum</th><th>Meccs</th><th>⚡ Bátrabb tipp</th><th class="n">~Odds</th><th class="n">Talált/Esély</th></tr></thead><tbody>${singleRows}</tbody></table></div>
    </div>`;
 }
 /* ---- Matek-tipp: minden meccsre a kiszámolt optimális fogadás + tét ---- */
