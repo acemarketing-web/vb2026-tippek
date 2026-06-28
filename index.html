@@ -251,7 +251,7 @@
 
   <div class="foot">
     <div class="disc">⚠️ <b>18+ · Felelős játék.</b> Ez statisztikai modell (Elo-rating + Poisson gólmodell + Monte Carlo a hivatalos kieséses ágrajzzal), nem garantált jóslat. A dashboard <b>csak tippeket és esélyeket (%) ad, oddsot nem</b> — a pontos szorzókat fogadás előtt nézd meg a Tippmixen. Csak annyit tegyél fel, amennyit elviselsz elveszíteni. Segélyvonal: 06-80-505-505.</div>
-    <p style="margin-top:14px">Állás: 2026.06.27. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
+    <p style="margin-top:14px">Állás: 2026.06.28. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
   </div>
 </div>
 
@@ -328,7 +328,7 @@ for(const c in TEAMS){TEAMS[c].em=TEAMS[c].fl;TEAMS[c].fl=flagImg(c);}
 /* ============================================================
    TELJES MENETREND (időrendben, dátummal) – 72 csoportmeccs
    ============================================================ */
-const TODAY='2026-06-27';
+const TODAY='2026-06-28';
 const FIXTURES=[
   {d:'2026-06-11',g:'A',h:'MEX',a:'RSA'},{d:'2026-06-11',g:'A',h:'KOR',a:'CZE'},
   {d:'2026-06-12',g:'B',h:'CAN',a:'BIH'},{d:'2026-06-12',g:'D',h:'USA',a:'PAR'},
@@ -347,6 +347,13 @@ const FIXTURES=[
   {d:'2026-06-25',g:'E',h:'ECU',a:'GER'},{d:'2026-06-25',g:'E',h:'CUW',a:'CIV'},{d:'2026-06-25',g:'F',h:'JPN',a:'SWE'},{d:'2026-06-25',g:'F',h:'TUN',a:'NED'},{d:'2026-06-25',g:'D',h:'TUR',a:'USA'},{d:'2026-06-25',g:'D',h:'PAR',a:'AUS'},
   {d:'2026-06-26',g:'I',h:'NOR',a:'FRA'},{d:'2026-06-26',g:'I',h:'SEN',a:'IRQ'},{d:'2026-06-26',g:'H',h:'CPV',a:'KSA'},{d:'2026-06-26',g:'H',h:'URU',a:'ESP'},{d:'2026-06-26',g:'G',h:'EGY',a:'IRN'},{d:'2026-06-26',g:'G',h:'NZL',a:'BEL'},
   {d:'2026-06-27',g:'L',h:'PAN',a:'ENG'},{d:'2026-06-27',g:'L',h:'CRO',a:'GHA'},{d:'2026-06-27',g:'K',h:'COL',a:'POR'},{d:'2026-06-27',g:'K',h:'COD',a:'UZB'},{d:'2026-06-27',g:'J',h:'ALG',a:'AUT'},{d:'2026-06-27',g:'J',h:'JOR',a:'ARG'},
+  // Nyolcaddöntő (R32)
+  {d:'2026-06-28',g:'R32',h:'RSA',a:'CAN'},
+  {d:'2026-06-29',g:'R32',h:'BRA',a:'JPN'},{d:'2026-06-29',g:'R32',h:'GER',a:'PAR'},{d:'2026-06-29',g:'R32',h:'NED',a:'MAR'},
+  {d:'2026-06-30',g:'R32',h:'CIV',a:'NOR'},{d:'2026-06-30',g:'R32',h:'FRA',a:'SWE'},{d:'2026-06-30',g:'R32',h:'MEX',a:'ECU'},
+  {d:'2026-07-01',g:'R32',h:'ENG',a:'COD'},{d:'2026-07-01',g:'R32',h:'BEL',a:'SEN'},{d:'2026-07-01',g:'R32',h:'USA',a:'BIH'},
+  {d:'2026-07-02',g:'R32',h:'ESP',a:'AUT'},{d:'2026-07-02',g:'R32',h:'POR',a:'CRO'},{d:'2026-07-02',g:'R32',h:'SUI',a:'ALG'},
+  {d:'2026-07-03',g:'R32',h:'AUS',a:'EGY'},{d:'2026-07-03',g:'R32',h:'ARG',a:'CPV'},{d:'2026-07-03',g:'R32',h:'COL',a:'GHA'},
 ];
 const SEED_RESULTS=[
   {g:'A',h:'MEX',a:'RSA',hg:2,ag:0},{g:'A',h:'KOR',a:'CZE',hg:2,ag:1},
@@ -391,6 +398,10 @@ const SEED_RESULTS=[
   {g:'I',h:'NOR',a:'FRA',hg:1,ag:4},{g:'I',h:'SEN',a:'IRQ',hg:5,ag:0},
   {g:'H',h:'CPV',a:'KSA',hg:0,ag:0},{g:'H',h:'URU',a:'ESP',hg:0,ag:1},
   {g:'G',h:'EGY',a:'IRN',hg:1,ag:1},{g:'G',h:'NZL',a:'BEL',hg:1,ag:5},
+  // jún. 27
+  {g:'L',h:'PAN',a:'ENG',hg:0,ag:2},{g:'L',h:'CRO',a:'GHA',hg:2,ag:1},
+  {g:'K',h:'COL',a:'POR',hg:0,ag:0},{g:'K',h:'COD',a:'UZB',hg:3,ag:1},
+  {g:'J',h:'ALG',a:'AUT',hg:3,ag:3},{g:'J',h:'JOR',a:'ARG',hg:1,ag:3},
 ];
 let RESULTS=loadResults();
 function loadResults(){try{const s=localStorage.getItem('vb26res');if(s)return JSON.parse(s);}catch(e){}return SEED_RESULTS.map(r=>({...r}));}
@@ -901,7 +912,7 @@ function renderGroups(){
 let matchFilter='all';
 function renderMatches(){
   const el=document.getElementById('matches');
-  let fb='<div class="filterbar"><button data-f="all" class="'+(matchFilter==='all'?'active':'')+'">Összes</button><button data-f="rem" class="'+(matchFilter==='rem'?'active':'')+'">Csak hátralévő</button>';
+  let fb='<div class="filterbar"><button data-f="all" class="'+(matchFilter==='all'?'active':'')+'">Összes</button><button data-f="rem" class="'+(matchFilter==='rem'?'active':'')+'">Csak hátralévő</button><button data-f="R32" class="'+(matchFilter==='R32'?'active':'')+'">⚔️ Kieséses</button>';
   for(const g in GROUPS)fb+=`<button data-f="${g}" class="${matchFilter===g?'active':''}">Cs. ${g}</button>`;
   fb+='</div>';
   const info='<div class="note" style="margin-top:0;margin-bottom:14px">💡 Minden meccsnél a <b>modell esélyei %-ban</b> + a kiemelt tipp. <b>Oddsot szándékosan nem írunk ki</b> — a pontos szorzót fogadás előtt nézd meg a Tippmixen.</div>';
