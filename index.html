@@ -414,7 +414,7 @@ function buildResMap(){RESMAP={};RESULTS.forEach(r=>RESMAP[resKey(r.h,r.a)]=r);}
 const WD=['vas','hét','kedd','sze','csüt','pén','szo'],MON=['jan','feb','már','ápr','máj','jún','júl','aug','szep','okt','nov','dec'];
 function fmtDate(ds){const[y,m,d]=ds.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));return `${MON[m-1]}. ${d}., ${WD[dt.getUTCDay()]}`;}
 function relDay(ds){const a=Date.parse(TODAY),b=Date.parse(ds);const diff=Math.round((b-a)/864e5);
-  if(diff<0)return['Lejátszott','past'];if(diff===0)return['Ma','today'];if(diff===1)return['Holnap','today'];if(diff<=3)return[diff+' nap múlva','soon'];return null;}
+  if(diff<0)return['Lejátszott','past'];if(diff===0)return['Ma','today'];if(diff===1)return['Holnap','today'];if(diff<=7)return[diff+' nap múlva','soon'];return null;}
 
 /* ============================================================
    HIVATALOS KIESÉSES ÁGRAJZ
@@ -674,8 +674,8 @@ function renderOverview(){
   <div class="grid g4" style="margin-bottom:16px">
     <div class="stat"><div class="v">${pc(SIM[fav].ch)}</div><div class="l">Esélyes a címre</div><div class="x">${TEAMS[fav].fl} ${TEAMS[fav].n}</div></div>
     <div class="stat"><div class="v">${TEAMS[PB.champ].fl} ${PB.champ}</div><div class="l">Modell-bajnok (ágrajz)</div><div class="x">${TEAMS[PB.champ].n}</div></div>
-    <div class="stat"><div class="v">48→32</div><div class="l">Kieséses körbe jut</div><div class="x">12 győztes + 12 második + 8 harmadik</div></div>
-    <div class="stat"><div class="v">${gd}</div><div class="l">„Halálcsoport"</div><div class="x">${GROUPS[gd].map(t=>TEAMS[t].fl).join(' ')}</div></div>
+    <div class="stat"><div class="v">⚔️ R32</div><div class="l">Nyolcaddöntő</div><div class="x">Jún. 28 – Júl. 3</div></div>
+    <div class="stat"><div class="v">${pc(SIM[dark].ch)}</div><div class="l">Sötét ló esélye</div><div class="x">${TEAMS[dark].fl} ${TEAMS[dark].n}</div></div>
   </div>
   <div class="grid g2">
     <div class="card"><h3>📅 Mai meccsek (${fmtDate(TODAY)})</h3>${todayHtml}
@@ -686,8 +686,9 @@ function renderOverview(){
     <div class="narr">
       <p>A fő favorit <b>${TEAMS[fav].n}</b> (${pc(SIM[fav].ch)} bajnoki esély), nyomában <b>${TEAMS[sec].n}</b> (${pc(SIM[sec].ch)}) és <b>${TEAMS[thi].n}</b> (${pc(SIM[thi].ch)}).</p>
       <p>A determinisztikus ágrajz a <b>${TEAMS[PB.box['M104'].a].n} – ${TEAMS[PB.box['M104'].b].n}</b> döntőt vetíti előre, a kupát <b>${TEAMS[PB.champ].n}</b> emeli a magasba (teljes út: 🗺️ Ágrajz fül).</p>
-      <p>Sötét ló: <b>${TEAMS[dark].n}</b> — ${pc(SIM[dark].ch)} címeséllyel a papírformán felül teljesíthet. A legnehezebb csoport a <b>${gd}-csoport</b>.</p>
-      <p>Eddigi nagy meglepetés: a <b>Zöld-foki-szigetek 0–0-t</b> harcolt ki Spanyolország ellen! Gólzáporok: <b>Németország 7–1</b> Curaçao, <b>Svédország 5–1</b> Tunézia. Az USA 4–1-re verte Paraguayt.</p>
+      <p>Sötét ló: <b>${TEAMS[dark].n}</b> — ${pc(SIM[dark].ch)} címeséllyel meglepetést okozhat. Modell-döntő: <b>${TEAMS[PB.box['M104'].a].n} – ${TEAMS[PB.box['M104'].b].n}</b>, a kupa várható gazdája: <b>${TEAMS[PB.champ].n}</b>.</p>
+      <p>🏁 <b>Csoportkör lezárult</b> — 72 meccs, 66 lejátszott eredmény beépítve. Nagy meglepetések: 🇨🇻 Zöld-foki-szigetek 0–0 Spanyolország; Törökország 3–2 USA; Norvégia 4–1 Franciaország (csoportkör); Ecuador 2–1 Németország. Gólzápor: 🇩🇪 Németország 7–1 Curaçao, 🇸🇪 Svédország 5–1 Tunézia, 🇸🇳 Szenegál 5–0 Irak.</p>
+      <p>⚔️ <b>Nyolcaddöntő (R32) jún. 28 – júl. 3:</b> ma Dél-Afrika–Kanada; holnap Brazília–Japán, Németország–Paraguay, Hollandia–Marokkó; majd Elefántcsontpart–Norvégia, Franciaország–Svédország, Mexikó–Ecuador; Anglia–Kongói DK, Belgium–Szenegál, USA–BIH; Spanyolország–Ausztria, Portugália–Horvátország, Svájc–Algéria; Ausztrália–Egyiptom, Argentína–Zöld-foki-szigetek, Kolumbia–Ghána. Minden meccshez tipp a füleken! 🗺️</p>
     </div></div>`;
 }
 
