@@ -422,10 +422,14 @@ const SEED_RESULTS=[
   {g:'R32',h:'BRA',a:'JPN',hg:2,ag:1},
   {g:'R32',h:'GER',a:'PAR',hg:1,ag:1,ph:3,pa:4,adv:'a'},
   {g:'R32',h:'NED',a:'MAR',hg:1,ag:1,ph:2,pa:3,adv:'a'},
+  // jún. 30 (R32)
+  {g:'R32',h:'CIV',a:'NOR',hg:1,ag:2},
+  {g:'R32',h:'FRA',a:'SWE',hg:3,ag:0},
 ];
+const SEED_VER=6;
 let RESULTS=loadResults();
-function loadResults(){try{const s=localStorage.getItem('vb26res');if(s)return JSON.parse(s);}catch(e){}return SEED_RESULTS.map(r=>({...r}));}
-function saveResults(){try{localStorage.setItem('vb26res',JSON.stringify(RESULTS));}catch(e){}}
+function loadResults(){try{const v=parseInt(localStorage.getItem('vb26ver')||'0');if(v<SEED_VER){localStorage.removeItem('vb26res');localStorage.setItem('vb26ver',String(SEED_VER));}}catch(e){}try{const s=localStorage.getItem('vb26res');if(s)return JSON.parse(s);}catch(e){}return SEED_RESULTS.map(r=>({...r}));}
+function saveResults(){try{localStorage.setItem('vb26res',JSON.stringify(RESULTS));localStorage.setItem('vb26ver',String(SEED_VER));}catch(e){}}
 const resKey=(x,y)=>[x,y].sort().join('|');
 let RESMAP={};
 function buildResMap(){RESMAP={};RESULTS.forEach(r=>RESMAP[resKey(r.h,r.a)]=r);}
