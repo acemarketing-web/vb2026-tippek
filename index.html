@@ -206,6 +206,19 @@
   .status{font-size:12px;color:var(--mut);margin-top:9px;min-height:16px}
   .foot{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);color:var(--mut2);font-size:12px}
   .disc{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);color:#e6c878;border-radius:12px;padding:12px 15px;font-size:12px;margin-top:14px;line-height:1.6}
+  /* Score-tipp fül */
+  .stop{font-family:var(--disp);font-size:19px;font-weight:700;color:var(--a3);margin-right:5px;letter-spacing:-.5px}
+  .stopp{font-size:10px;color:var(--mut2);vertical-align:middle}
+  .sa{display:inline-flex;align-items:center;gap:2px;margin-right:5px;font-size:12px;font-weight:600;color:var(--txt)}
+  .sap{color:var(--mut2);font-size:10px}
+  .sr{font-family:var(--disp);font-size:16px;font-weight:700}
+  .spen{font-size:10px;color:var(--mut2);margin-left:2px}
+  .sd{font-size:11px;color:var(--mut2);display:block}
+  .sb-ex{background:rgba(32,223,106,.2);color:#0fb851;border:1px solid rgba(32,223,106,.45);border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+  .sb-win{background:rgba(32,223,106,.07);color:var(--a1);border:1px solid rgba(32,223,106,.2);border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap}
+  .sb-miss{background:rgba(251,84,100,.09);color:var(--a4);border:1px solid rgba(251,84,100,.22);border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap}
+  .sb-fut{background:rgba(255,195,61,.09);color:var(--warn);border:1px solid rgba(255,195,61,.22);border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap}
+  .stbl td{padding:7px 9px}
   ::-webkit-scrollbar{height:9px;width:9px} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:9px} ::-webkit-scrollbar-track{background:transparent}
 </style>
 </head>
@@ -231,6 +244,7 @@
       <button data-t="bracket">🗺️ Ágrajz</button>
       <button data-t="winner">👑 VB-győztes</button>
       <button data-t="stats">📈 Statisztikák</button>
+      <button data-t="scores">🎯 Score-tipp</button>
       <button data-t="update">🔄 Frissítés</button>
     </nav>
   </header>
@@ -247,6 +261,7 @@
   <section id="bracket"></section>
   <section id="winner"></section>
   <section id="stats"></section>
+  <section id="scores"></section>
   <section id="update"></section>
 
   <div class="foot">
@@ -665,7 +680,53 @@ function recompute(cb){
     renderAll();if(cb)cb();
   },40);
 }
-function renderAll(){renderOverview();renderBank();renderDaily();renderUpset();renderScorer();renderMath();renderBold();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderUpdate();}
+function renderScoreTips(){
+  let exact=0,winOk=0,played=0;
+  const rows=ALLPAIRS.map(m=>{
+    const p=predFor(m);const cs0=p.cs[0];
+    const[ph,pa]=cs0.s.split('-').map(Number);
+    let badge='',rowStyle='';
+    if(m.res){
+      played++;const rh=m.res.hg,ra=m.res.ag;
+      const isEx=(ph===rh&&pa===ra);
+      const pw=ph>pa?'h':ph<pa?'a':'d',aw=rh>ra?'h':rh<ra?'a':'d';
+      if(isEx){exact++;winOk++;badge='<span class="sb-ex">🎯 Pontos!</span>';rowStyle='background:rgba(32,223,106,.045);';}
+      else if(pw===aw){winOk++;badge='<span class="sb-win">✓ Győztes ok</span>';}
+      else{badge='<span class="sb-miss">✗ Miss</span>';}
+    }else{
+      const rel=relDay(m.d);badge=`<span class="sb-fut">${rel?rel[0]:'Jövő'}</span>`;
+    }
+    const A=TEAMS[m.a],B=TEAMS[m.b];
+    const alts=p.cs.slice(1,4).map(s=>`<span class="sa">${s.s}<span class="sap"> ${(s.p*100).toFixed(0)}%</span></span>`).join('');
+    const res=m.res?`<span class="sr">${m.res.hg}–${m.res.ag}${m.res.adv?`<span class="spen">(p.${m.res.ph}:${m.res.pa})</span>`:''}</span>`:`<span style="color:var(--mut2)">—</span>`;
+    const maTag=m.d===TODAY?' <span class="mtag tag-live" style="font-size:9px">Ma</span>':'';
+    return `<tr style="${rowStyle}">
+      <td><span class="sd">${fmtDate(m.d)}${maTag}</span></td>
+      <td><span class="pill" style="font-size:9px;padding:2px 6px">${m.g}</span></td>
+      <td><span class="fl">${A.fl}</span><b>${m.a}</b><span style="color:var(--mut2);margin:0 5px">vs</span><b>${m.b}</b><span class="fl">${B.fl}</span></td>
+      <td class="n"><span class="stop">${ph}–${pa}</span><span class="stopp">${(cs0.p*100).toFixed(0)}%</span></td>
+      <td>${alts}</td>
+      <td class="n">${res}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+  const ep=played?Math.round(exact/played*100):0,wp=played?Math.round(winOk/played*100):0,mp=played?Math.round((played-winOk)/played*100):0;
+  document.getElementById('scores').innerHTML=`
+    <div class="grid g4" style="margin-bottom:18px">
+      <div class="stat"><div class="v" style="color:#0fb851">${exact}</div><div class="l">🎯 Pontos tipp</div><div class="x">${exact}/${played} lejátszott · <b style="color:var(--a1)">${ep}%</b></div></div>
+      <div class="stat"><div class="v">${winOk}</div><div class="l">✓ Helyes győztes</div><div class="x">${winOk}/${played} · <b style="color:var(--a1)">${wp}%</b> (pontos+győztes)</div></div>
+      <div class="stat"><div class="v" style="color:var(--a4)">${played-winOk}</div><div class="l">✗ Miss</div><div class="x">${played-winOk}/${played} · <b style="color:var(--a4)">${mp}%</b></div></div>
+      <div class="stat"><div class="v" style="color:var(--warn)">${ALLPAIRS.length-played}</div><div class="l">⏳ Hátralévő</div><div class="x">meccs, modell előretipp</div></div>
+    </div>
+    <div class="card"><h3>🎯 Score-tipp — minden meccs legvalószínűbb végeredménye</h3>
+      <div class="note" style="margin-top:0;margin-bottom:14px">A modell <b>Poisson-eloszlás + Elo</b> alapján számolt legvalószínűbb végeredmény minden meccsre. Visszamenőleg is mutatja mit tippelt volna: <b style="color:var(--a3)">🎯 Pontos!</b> = exakt egyezés · <b style="color:var(--a1)">✓ Győztes ok</b> = helyes kimenetel, más szám · <b style="color:var(--a4)">✗ Miss</b> = rossz kimenetel. Az alternatívák a 2–4. legvalószínűbb scoreline-ok.</div>
+      <div style="overflow-x:auto"><table class="stbl">
+        <thead><tr><th>Dátum</th><th>Cs.</th><th>Meccs</th><th class="n">Tipp #1</th><th>Alternatívák (#2–4)</th><th class="n">Valós</th><th>Eredmény</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div>`;
+}
+function renderAll(){renderOverview();renderBank();renderDaily();renderUpset();renderScorer();renderMath();renderBold();renderGroups();renderMatches();renderBracket();renderWinner();renderStats();renderScoreTips();renderUpdate();}
 
 /* dátum-fejléces lista építő */
 function withDateHeaders(list,rowFn){
