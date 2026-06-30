@@ -251,7 +251,7 @@
 
   <div class="foot">
     <div class="disc">⚠️ <b>18+ · Felelős játék.</b> Ez statisztikai modell (Elo-rating + Poisson gólmodell + Monte Carlo a hivatalos kieséses ágrajzzal), nem garantált jóslat. A dashboard <b>csak tippeket és esélyeket (%) ad, oddsot nem</b> — a pontos szorzókat fogadás előtt nézd meg a Tippmixen. Csak annyit tegyél fel, amennyit elviselsz elveszíteni. Segélyvonal: 06-80-505-505.</div>
-    <p style="margin-top:14px">Állás: 2026.06.28. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
+    <p style="margin-top:14px">Állás: 2026.06.30. · Menetrend & eredmények: FIFA / Al Jazeera / CBS / Sky / Wikipedia · Motor: saját Elo+Poisson+Monte Carlo (8000 szimuláció).</p>
   </div>
 </div>
 
@@ -328,7 +328,7 @@ for(const c in TEAMS){TEAMS[c].em=TEAMS[c].fl;TEAMS[c].fl=flagImg(c);}
 /* ============================================================
    TELJES MENETREND (időrendben, dátummal) – 72 csoportmeccs
    ============================================================ */
-const TODAY='2026-06-28';
+const TODAY='2026-06-30';
 const FIXTURES=[
   {d:'2026-06-11',g:'A',h:'MEX',a:'RSA'},{d:'2026-06-11',g:'A',h:'KOR',a:'CZE'},
   {d:'2026-06-12',g:'B',h:'CAN',a:'BIH'},{d:'2026-06-12',g:'D',h:'USA',a:'PAR'},
@@ -402,6 +402,11 @@ const SEED_RESULTS=[
   {g:'L',h:'PAN',a:'ENG',hg:0,ag:2},{g:'L',h:'CRO',a:'GHA',hg:2,ag:1},
   {g:'K',h:'COL',a:'POR',hg:0,ag:0},{g:'K',h:'COD',a:'UZB',hg:3,ag:1},
   {g:'J',h:'ALG',a:'AUT',hg:3,ag:3},{g:'J',h:'JOR',a:'ARG',hg:1,ag:3},
+  // jún. 28–29 (R32)
+  {g:'R32',h:'RSA',a:'CAN',hg:0,ag:1},
+  {g:'R32',h:'BRA',a:'JPN',hg:2,ag:1},
+  {g:'R32',h:'GER',a:'PAR',hg:1,ag:1,ph:3,pa:4,adv:'a'},
+  {g:'R32',h:'NED',a:'MAR',hg:1,ag:1,ph:2,pa:3,adv:'a'},
 ];
 let RESULTS=loadResults();
 function loadResults(){try{const s=localStorage.getItem('vb26res');if(s)return JSON.parse(s);}catch(e){}return SEED_RESULTS.map(r=>({...r}));}
@@ -596,7 +601,12 @@ function simulate(N){
     const slotG=matchThirds(best.map(x=>x.g));const TH={};
     for(const slot in slotG){const tt=best.find(x=>x.g===slotG[slot]);if(tt)TH[slot]=tt.t;}
     const win={},resolve=(typ,key)=>typ==='W'?W[key]:typ==='R'?R[key]:TH[key];
-    for(const[id,t1,k1,t2,k2]of R32DEF){const A=resolve(t1,k1),B=resolve(t2,k2);win[id]=Math.random()<adv(A,B)?A:B;C[win[id]].r16++;}
+    for(const[id,t1,k1,t2,k2]of R32DEF){const A=resolve(t1,k1),B=resolve(t2,k2);
+      const kr=RESMAP[resKey(A,B)];let w;
+      if(kr&&kr.g==='R32'){const side=kr.adv?kr.adv:(kr.hg!==kr.ag?(kr.hg>kr.ag?'h':'a'):null);
+        w=side?(side==='h'?(kr.h===A?A:B):(kr.h===A?B:A)):(Math.random()<adv(A,B)?A:B);}
+      else{w=Math.random()<adv(A,B)?A:B;}
+      win[id]=w;C[win[id]].r16++;}
     const playR=(def,stage)=>{for(const[id,a,b]of def){const A=win[a],B=win[b];win[id]=Math.random()<adv(A,B)?A:B;C[win[id]][stage]++;}};
     playR(R16DEF,'qf');playR(QFDEF,'sf');playR(SFDEF,'fin');
     {const[id,a,b]=FINDEF;const A=win[a],B=win[b];win[id]=Math.random()<adv(A,B)?A:B;C[win[id]].ch++;}
@@ -612,7 +622,12 @@ function predictedBracket(){
   tc.sort((a,b)=>b.s-a.s);const best=tc.slice(0,8);const slotG=matchThirds(best.map(x=>x.g));
   const TH={};for(const slot in slotG){const tt=best.find(x=>x.g===slotG[slot]);if(tt)TH[slot]=tt.t;}
   const resolve=(typ,key)=>typ==='W'?W[key]:typ==='R'?R[key]:TH[key];const win={},box={};
-  for(const[id,t1,k1,t2,k2]of R32DEF){const A=resolve(t1,k1),B=resolve(t2,k2);const w=adv(A,B)>=0.5?A:B;win[id]=w;box[id]={a:A,b:B,w};}
+  for(const[id,t1,k1,t2,k2]of R32DEF){const A=resolve(t1,k1),B=resolve(t2,k2);
+    const kr=RESMAP[resKey(A,B)];let w;
+    if(kr&&kr.g==='R32'){const side=kr.adv?kr.adv:(kr.hg!==kr.ag?(kr.hg>kr.ag?'h':'a'):null);
+      w=side?(side==='h'?(kr.h===A?A:B):(kr.h===A?B:A)):(adv(A,B)>=0.5?A:B);}
+    else{w=adv(A,B)>=0.5?A:B;}
+    win[id]=w;box[id]={a:A,b:B,w};}
   const playR=def=>{for(const[id,a,b]of def){const A=win[a],B=win[b];const w=adv(A,B)>=0.5?A:B;win[id]=w;box[id]={a:A,b:B,w};}};
   playR(R16DEF);playR(QFDEF);playR(SFDEF);
   {const[id,a,b]=FINDEF;const A=win[a],B=win[b];const w=adv(A,B)>=0.5?A:B;win[id]=w;box[id]={a:A,b:B,w};}
@@ -634,7 +649,9 @@ const TMs=t=>`<span class="team"><span class="fl">${TEAMS[t].fl}</span><span cla
    ============================================================ */
 let SIM,PB,PRED={},ALLPAIRS=[];
 function buildPairs(){ALLPAIRS=FIXTURES.map(fx=>{const r=RESMAP[resKey(fx.h,fx.a)];
-  let res=null;if(r)res=(r.h===fx.h)?{hg:r.hg,ag:r.ag}:{hg:r.ag,ag:r.hg};
+  let res=null;if(r){const fl=r.h!==fx.h;res={hg:fl?r.ag:r.hg,ag:fl?r.hg:r.ag};
+    if(r.adv)res.adv=fl?(r.adv==='h'?'a':r.adv==='a'?'h':r.adv):r.adv;
+    if(r.ph!=null){res.ph=fl?r.pa:r.ph;res.pa=fl?r.ph:r.pa;}}
   return {g:fx.g,d:fx.d,a:fx.h,b:fx.a,res};});}
 function predFor(m){const k=m.d+m.g+m.a+m.b;if(!PRED[k])PRED[k]=predict(m.a,m.b);return PRED[k];}
 function recompute(cb){
@@ -642,8 +659,9 @@ function recompute(cb){
   document.getElementById('subline').innerHTML='Újraszámolás… 8000 szimuláció fut.';
   setTimeout(()=>{
     SIM=simulate(8000);PB=predictedBracket();ALLPAIRS.forEach(m=>predFor(m));
-    const played=RESULTS.length;
-    document.getElementById('subline').innerHTML=`48 csapat · 12 csoport · <b style="color:var(--a1)">${played}</b> lejátszott · <b style="color:var(--a1)">${72-played}</b> hátralévő csoportmeccs · hivatalos ágrajz · 8000 Monte Carlo szimuláció ✓`;
+    const grpPlayed=RESULTS.filter(r=>r.g.length===1).length;
+    const koPlayed=RESULTS.length-grpPlayed;
+    document.getElementById('subline').innerHTML=`48 csapat · 12 csoport · <b style="color:var(--a1)">${grpPlayed}/72</b> csoportmeccs${koPlayed?` · <b style="color:var(--a3)">${koPlayed} kieséses</b> lejátszott`:''} · hivatalos ágrajz · 8000 Monte Carlo szimuláció ✓`;
     renderAll();if(cb)cb();
   },40);
 }
@@ -926,7 +944,7 @@ function mrow(sel,p,t){return `<div class="row"><span class="sel">${sel}</span><
 function matchCard(m){
   const p=predFor(m);const A=TEAMS[m.a],B=TEAMS[m.b];const bt=bestTip(p);const bk=banker(p);const done=!!m.res;
   const tag=done?'<span class="mtag tag-done">Vége</span>':(m.d===TODAY?'<span class="mtag tag-live">Ma</span>':'<span class="mtag tag-next">Hátralévő</span>');
-  const score=done?`<span class="mscore">${m.res.hg} – ${m.res.ag}</span>`:'';
+  const score=done?`<span class="mscore">${m.res.hg} – ${m.res.ag}${m.res.adv?` <span style="color:var(--mut);font-size:11px">(p.${m.res.ph}:${m.res.pa})</span>`:''}</span>`:'';
   const hp=p.pH*100,dp=p.pD*100,ap=p.pA*100;
   return `<details class="match"><summary><span class="pill">${m.g}</span>
     <span class="mteams"><span class="fl">${A.fl}</span>${A.n}<span class="vs">vs</span><span class="fl">${B.fl}</span>${B.n}</span>
